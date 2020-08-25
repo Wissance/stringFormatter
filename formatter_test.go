@@ -19,3 +19,9 @@ func TestStrFormat(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, "No args ... : {0}, {1}, {2}", strFormatResult)
 }
+
+func TestStrFormatComplex(t *testing.T) {
+	strFormatResult, err := FormatComplex("Hello {user} what are you doing here {app} ?", map[string]string{"user":"vpupkin", "app":"mn_console"})
+	assert.Nil(t, err)
+	assert.Equal(t, "Hello vpupkin what are you doing here mn_console ?", strFormatResult)
+}
