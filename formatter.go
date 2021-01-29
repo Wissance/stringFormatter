@@ -96,7 +96,10 @@ func getItemAsStr(item interface{}) (string, error) {
 	    case bool:
 	    	strVal = strconv.FormatBool(item.(bool))
 	    	break
-	    case float32, float64:
+	    case float32:
+	    	strVal = strconv.FormatFloat(float64(item.(float32)), 'f', -1, 32)
+	    	break
+	    case float64:
 	    	strVal = strconv.FormatFloat(item.(float64), 'f', -1, 64)
 	    	break
 	}

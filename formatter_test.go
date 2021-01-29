@@ -18,7 +18,7 @@ func TestStrFormat(t *testing.T) {
 }
 
 func TestStrFormatGeneric(t *testing.T) {
-	strFormat1 := "Here we testing integers \"int8\": {0}, \"int16\": {1}, \"int32\": {2}, \"int64\": {3} and finally \"int\": {4}"
+	strFormat1 := "Here we are testing integers \"int8\": {0}, \"int16\": {1}, \"int32\": {2}, \"int64\": {3} and finally \"int\": {4}"
 	var v1 int8 = 8
 	var v2 int16 = -16
 	var v3 int32 = 32
@@ -26,9 +26,9 @@ func TestStrFormatGeneric(t *testing.T) {
 	var v5 int = 123
 
 	strFormatResult := Format(strFormat1, v1, v2, v3, v4, v5)
-	assert.Equal(t, "Here we testing integers \"int8\": 8, \"int16\": -16, \"int32\": 32, \"int64\": -64 and finally \"int\": 123", strFormatResult)
+	assert.Equal(t, "Here we are testing integers \"int8\": 8, \"int16\": -16, \"int32\": 32, \"int64\": -64 and finally \"int\": 123", strFormatResult)
 
-	strFormat2 := "Here we testing integers \"uint8\": {0}, \"uint16\": {1}, \"uint32\": {2}, \"uint64\": {3} and finally \"uint\": {4}"
+	strFormat2 := "Here we are testing integers \"uint8\": {0}, \"uint16\": {1}, \"uint32\": {2}, \"uint64\": {3} and finally \"uint\": {4}"
 	var v6 uint8 = 8
 	var v7 uint16 = 16
 	var v8 uint32 = 32
@@ -36,7 +36,13 @@ func TestStrFormatGeneric(t *testing.T) {
 	var v10 uint = 128
 
 	strFormatResult = Format(strFormat2, v6, v7, v8, v9, v10)
-	assert.Equal(t, "Here we testing integers \"uint8\": 8, \"uint16\": 16, \"uint32\": 32, \"uint64\": 64 and finally \"uint\": 128", strFormatResult)
+	assert.Equal(t, "Here we are testing integers \"uint8\": 8, \"uint16\": 16, \"uint32\": 32, \"uint64\": 64 and finally \"uint\": 128", strFormatResult)
+
+	strFormat3 := "Here we are testing floats \"float32\": {0}, \"float64\":{1}"
+	var v11 float32 = 1.24
+	var v12 float64 = 1.56
+	strFormatResult = Format(strFormat3, v11, v12)
+	assert.Equal(t, "Here we are testing floats \"float32\": 1.24, \"float64\":1.56", strFormatResult)
 }
 
 func TestStrFormatComplex(t *testing.T) {
