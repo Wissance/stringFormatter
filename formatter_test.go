@@ -49,6 +49,12 @@ func TestStrFormatGeneric(t *testing.T) {
 	var v14 bool = true
 	strFormatResult = Format(strFormat4, v13, v14)
 	assert.Equal(t, "Here we are testing \"bool\" args: false, true", strFormatResult)
+
+	strFormat5 := "Here we are testing \"complex64\" {0} and \"complex128\": {1}"
+	var v15 complex64 = complex(1.0, 6.0)
+	var v16 complex128 = complex(2.3, 3.2)
+	strFormatResult = Format(strFormat5, v15, v16)
+	assert.Equal(t, "Here we are testing \"complex64\" (1+6i) and \"complex128\": (2.3+3.2i)", strFormatResult)
 }
 
 func TestStrFormatComplex(t *testing.T) {
