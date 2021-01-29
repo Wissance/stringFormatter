@@ -6,37 +6,15 @@ import (
 	"strings"
 )
 
-/* Func that make string formatting from template
- * Template is a following "Hello {0}, It is time to go to the {1}, {0}!"
- * if you are passing to upper mentioned str template values John, library you get
- * following result: Hello John, It is time to go to the library, John!
- */
-func Format(template string, args ...string) (string, error){
-
-	// we return here original string
-	if args == nil {
-		return template, nil
-	}
-
-	formattedStr := template
-
-	for index, arg := range args{
-		argNr := "{" + strconv.Itoa(index) + "}"
-		formattedStr = strings.Replace(formattedStr, argNr, arg, -1)
-	}
-
-	return formattedStr, nil
-}
-
 /* Func that makes string formatting from template
  * It differs from above function only by generic interface that allow to use only primitive data types:
- * - integers
+ * - integers (int, int8, int16, int32, int64, uint, uint8, uint16, uint32, uin64)
  * - floats
  * - boolean
  * - string
  * - complex
  */
-func FormatGeneric(template string, args ...interface{}) string {
+func Format(template string, args ...interface{}) string {
 	if args == nil {
 		return template
 	}
