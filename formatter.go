@@ -2,6 +2,7 @@ package stringFormatter
 
 import (
 	"fmt"
+	"github.com/golang/glog"
 	"strconv"
 	"strings"
 )
@@ -9,7 +10,7 @@ import (
 /* Func that makes string formatting from template
  * It differs from above function only by generic interface that allow to use only primitive data types:
  * - integers (int, int8, int16, int32, int64, uint, uint8, uint16, uint32, uin64)
- * - floats
+ * - floats (float32, float64)
  * - boolean
  * - string
  * - complex
@@ -23,18 +24,18 @@ func Format(template string, args ...interface{}) string {
 	for index, val := range args {
 		arg := "{" + strconv.Itoa(index) + "}"
 		strVal, err := getItemAsStr(val)
-		fmt.Println(strVal)
 		if err != nil {
 			errStr += err.Error()
 			errStr += "\n"
 		}
+		// todo: umv: log error
 
 		formattedStr = strings.Replace(formattedStr, arg, strVal, -1)
 	}
-	/*var err error = nil
+
 	if len(errStr) > 0 {
-		err = errors.New(errStr)
-	}*/
+		glog.Warning(errStr)
+	}
 	return formattedStr
 }
 
@@ -103,6 +104,7 @@ func getItemAsStr(item interface{}) (string, error) {
 	    	strVal = strconv.FormatFloat(item.(float64), 'f', -1, 64)
 	    	break
 	     default:
+	     	strVal = fmt.Sprintf("%v", item)
 	     	break
 	}
 	return strVal, err
