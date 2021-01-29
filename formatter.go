@@ -1,7 +1,6 @@
 package stringFormatter
 
 import (
-	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -37,9 +36,9 @@ func Format(template string, args ...string) (string, error){
  * - string
  * - complex
  */
-func FormatGeneric(template string, args ...interface{}) (string, error) {
+func FormatGeneric(template string, args ...interface{}) string {
 	if args == nil {
-		return template, nil
+		return template
 	}
 	errStr := ""
 	formattedStr := template
@@ -54,11 +53,11 @@ func FormatGeneric(template string, args ...interface{}) (string, error) {
 
 		formattedStr = strings.Replace(formattedStr, arg, strVal, -1)
 	}
-	var err error = nil
+	/*var err error = nil
 	if len(errStr) > 0 {
 		err = errors.New(errStr)
-	}
-	return formattedStr, err
+	}*/
+	return formattedStr
 }
 
 /* Func that format more complex templates like "Hello {username} here is our application {appname}
