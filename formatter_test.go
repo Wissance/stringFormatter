@@ -60,4 +60,7 @@ func TestStrFormatGeneric(t *testing.T) {
 func TestStrFormatComplex(t *testing.T) {
 	strFormatResult := FormatComplex("Hello {user} what are you doing here {app} ?", map[string]interface{}{"user":"vpupkin", "app":"mn_console"})
 	assert.Equal(t, "Hello vpupkin what are you doing here mn_console ?", strFormatResult)
+
+	strFormatResult = FormatComplex("Current app settings are: ipAddr: {ipaddr}, port: {port}, use ssl: {ssl}.", map[string]interface{}{"ipaddr":"127.0.0.1", "port":5432, "ssl":false})
+	assert.Equal(t, "Current app settings are: ipAddr: 127.0.0.1, port: 5432, use ssl: false.", strFormatResult)
 }
