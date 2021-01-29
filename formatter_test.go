@@ -43,6 +43,12 @@ func TestStrFormatGeneric(t *testing.T) {
 	var v12 float64 = 1.56
 	strFormatResult = Format(strFormat3, v11, v12)
 	assert.Equal(t, "Here we are testing floats \"float32\": 1.24, \"float64\":1.56", strFormatResult)
+
+	strFormat4 := "Here we are testing \"bool\" args: {0}, {1}"
+	var v13 bool = false
+	var v14 bool = true
+	strFormatResult = Format(strFormat4, v13, v14)
+	assert.Equal(t, "Here we are testing \"bool\" args: false, true", strFormatResult)
 }
 
 func TestStrFormatComplex(t *testing.T) {
