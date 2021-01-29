@@ -28,8 +28,6 @@ func Format(template string, args ...interface{}) string {
 			errStr += err.Error()
 			errStr += "\n"
 		}
-		// todo: umv: log error
-
 		formattedStr = strings.Replace(formattedStr, arg, strVal, -1)
 	}
 
@@ -42,21 +40,29 @@ func Format(template string, args ...interface{}) string {
 /* Func that format more complex templates like "Hello {username} here is our application {appname}
  *
  */
-func FormatComplex(template string, args map[string]string)  (string, error) {
+func FormatComplex(template string, args map[string]interface{}) string {
 	if args == nil {
-		return template, nil
+		return template
 	}
-
+    errStr := ""
 	formattedStr := template
 	for key, val := range args {
 		arg := "{" + key + "}"
-		formattedStr = strings.Replace(formattedStr, arg, val, -1)
+		strVal, err := getItemAsStr(val)
+		if err != nil {
+			errStr += err.Error()
+			errStr += "\n"
+		}
+		formattedStr = strings.Replace(formattedStr, arg, strVal, -1)
 	}
-    return formattedStr, nil
+	if len(errStr) > 0 {
+		glog.Warning(errStr)
+	}
+
+    return formattedStr
 }
 
 // todo: umv: impl format passing as param
-// todo: add complex support
 func getItemAsStr(item interface{}) (string, error) {
     var strVal string
     var err error
