@@ -26,7 +26,8 @@ you get string "Hello vpupkin what are you doing here mn_console ?"
 another example is: 
 
 ```go
-    strFormatResult = FormatComplex("Current app settings are: ipAddr: {ipaddr}, port: {port}, use ssl: {ssl}.", map[string]interface{}{"ipaddr":"127.0.0.1", "port":5432, "ssl":false})
+    strFormatResult = FormatComplex("Current app settings are: ipAddr: {ipaddr}, port: {port}, use ssl: {ssl}.", 
+                                    map[string]interface{}{"ipaddr":"127.0.0.1", "port":5432, "ssl":false})
 ```
 a result will be: "Current app settings are: ipAddr: 127.0.0.1, port: 5432, use ssl: false."
 
