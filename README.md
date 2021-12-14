@@ -8,7 +8,11 @@ This is a tiny GO module for ***template text formatting like in C# or/and Pytho
 #### Format by arg order
 i.e. you have following template:  Hello {0}, we are greeting you here: {1}!
 
-if you call Format with args "manager" and "salesApp" : Format("Hello {0}, we are greeting you here: {1}!", "manager", "salesApp")
+if you call Format with args "manager" and "salesApp" : 
+
+```go
+Format("Hello {0}, we are greeting you here: {1}!", "manager", "salesApp")
+```
 
 you get string "Hello manager, we are greeting you here: salesApp!"
 
