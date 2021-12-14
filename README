@@ -1,6 +1,9 @@
-This is a tiny GO module for template text formatting like in C# or/and Python
+### Description
+This is a tiny GO module for ***template text formatting like in C# or/and Python*** using:
+- {n} , n here is a number to notes order of argument list to use
+- {name} to notes arguments by name i.e. {name}, {last_name}, {address} and so on ...
 
-## Examples
+### Examples
 
 #### Format by arg order
 i.e. you have following template:  Hello {0}, we are greeting you here: {1}!
