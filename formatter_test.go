@@ -1,6 +1,7 @@
 package stringFormatter
 
 import (
+	"errors"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -63,4 +64,18 @@ func TestStrFormatComplex(t *testing.T) {
 
 	strFormatResult = FormatComplex("Current app settings are: ipAddr: {ipaddr}, port: {port}, use ssl: {ssl}.", map[string]interface{}{"ipaddr":"127.0.0.1", "port":5432, "ssl":false})
 	assert.Equal(t, "Current app settings are: ipAddr: 127.0.0.1, port: 5432, use ssl: false.", strFormatResult)
+}
+
+func TestStrFormatStruct(t *testing.T) {
+	type Example struct {
+		Int    int
+		Str    string
+		Double float64
+		Err    error
+	}
+
+	example1 := Example{Int: 123, Str: "This is a test str, nothing more special", Double: -1.098743, Err: errors.New("main question error, is 42")}
+	result := Format("Example is: {0}", example1)
+	assert.NotEmpty(t, result)
+	assert.Equal(t, "Example is: {123 This is a test str, nothing more special -1.098743 main question error, is 42}", result)
 }
