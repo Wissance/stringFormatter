@@ -15,6 +15,12 @@ import (
  * - boolean
  * - string
  * - complex
+ * - objects
+ * This function defines format automatically
+ * Parameters
+ *    - template - string that contains template
+ *    - args - values that are using for formatting with template
+ * Returns formatted string
  */
 func Format(template string, args ...interface{}) string {
 	if args == nil {
@@ -39,8 +45,11 @@ func Format(template string, args ...interface{}) string {
 }
 
 // FormatComplex
-/* Function that format text using more complex templates like "Hello {username} here is our application {appname}
- *
+/* Function that format text using more complex templates contains string literals i.e "Hello {username} here is our application {appname}
+ * Parameters
+ *    - template - string that contains template
+ *    - args - values (dictionary: string key - any value) that are using for formatting with template
+ * Returns formatted string
  */
 func FormatComplex(template string, args map[string]interface{}) string {
 	if args == nil {
