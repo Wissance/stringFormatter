@@ -6,7 +6,7 @@ A factory that helps to build text or strings from templates.
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/wissance/stringFormatter?style=plastic) 
 ![GitHub issues](https://img.shields.io/github/issues/wissance/stringFormatter?style=plastic)
 ![GitHub Release Date](https://img.shields.io/github/release-date/wissance/stringFormatter) 
-![GitHub release (latest by date)](https://img.shields.io/github/downloads/wissance/stringFormatter/v0.2.1/total?style=plastic)
+![GitHub release (latest by date)](https://img.shields.io/github/downloads/wissance/stringFormatter/v0.2.2/total?style=plastic)
 
 ![Ferrum: A better Auth Server](/img/sf_cover.png)
 
