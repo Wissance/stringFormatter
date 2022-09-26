@@ -7,11 +7,11 @@ import (
 )
 
 func TestStrFormat(t *testing.T) {
-    strFormatResult := Format("Hello i am {0}, my age is {1} and i am waiting for {2}, because i am {0}!",
-    	                      "Michael Ushakov (Evillord666)", "34", "\"Great Success\"")
-    assert.Equal(t, "Hello i am Michael Ushakov (Evillord666), my age is 34 and i am waiting for \"Great Success\", because i am Michael Ushakov (Evillord666)!", strFormatResult)
+	strFormatResult := Format("Hello i am {0}, my age is {1} and i am waiting for {2}, because i am {0}!",
+		"Michael Ushakov (Evillord666)", "34", "\"Great Success\"")
+	assert.Equal(t, "Hello i am Michael Ushakov (Evillord666), my age is 34 and i am waiting for \"Great Success\", because i am Michael Ushakov (Evillord666)!", strFormatResult)
 
-    strFormatResult = Format("We are wondering if these values would be replaced : {5}, {4}, {0}", "one", "two", "three")
+	strFormatResult = Format("We are wondering if these values would be replaced : {5}, {4}, {0}", "one", "two", "three")
 	assert.Equal(t, "We are wondering if these values would be replaced : {5}, {4}, one", strFormatResult)
 
 	strFormatResult = Format("No args ... : {0}, {1}, {2}")
@@ -59,10 +59,10 @@ func TestStrFormatGeneric(t *testing.T) {
 }
 
 func TestStrFormatComplex(t *testing.T) {
-	strFormatResult := FormatComplex("Hello {user} what are you doing here {app} ?", map[string]interface{}{"user":"vpupkin", "app":"mn_console"})
+	strFormatResult := FormatComplex("Hello {user} what are you doing here {app} ?", map[string]interface{}{"user": "vpupkin", "app": "mn_console"})
 	assert.Equal(t, "Hello vpupkin what are you doing here mn_console ?", strFormatResult)
 
-	strFormatResult = FormatComplex("Current app settings are: ipAddr: {ipaddr}, port: {port}, use ssl: {ssl}.", map[string]interface{}{"ipaddr":"127.0.0.1", "port":5432, "ssl":false})
+	strFormatResult = FormatComplex("Current app settings are: ipAddr: {ipaddr}, port: {port}, use ssl: {ssl}.", map[string]interface{}{"ipaddr": "127.0.0.1", "port": 5432, "ssl": false})
 	assert.Equal(t, "Current app settings are: ipAddr: 127.0.0.1, port: 5432, use ssl: false.", strFormatResult)
 }
 
