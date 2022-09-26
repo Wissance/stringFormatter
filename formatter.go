@@ -30,7 +30,7 @@ func Format(template string, args ...interface{}) string {
 	formattedStr := template
 	for index, val := range args {
 		arg := "{" + strconv.Itoa(index) + "}"
-		strVal, err := getItemAsStr(val)
+		strVal, err := getItemAsStr(&val)
 		if err != nil {
 			errStr += err.Error()
 			errStr += "\n"
@@ -55,11 +55,11 @@ func FormatComplex(template string, args map[string]interface{}) string {
 	if args == nil {
 		return template
 	}
-    errStr := ""
+	errStr := ""
 	formattedStr := template
 	for key, val := range args {
 		arg := "{" + key + "}"
-		strVal, err := getItemAsStr(val)
+		strVal, err := getItemAsStr(&val)
 		if err != nil {
 			errStr += err.Error()
 			errStr += "\n"
@@ -70,59 +70,61 @@ func FormatComplex(template string, args map[string]interface{}) string {
 		glog.Warning(errStr)
 	}
 
-    return formattedStr
+	return formattedStr
 }
 
 // todo: umv: impl format passing as param
-func getItemAsStr(item interface{}) (string, error) {
+func getItemAsStr(item *interface{}) (string, error) {
 	var strVal string
 	var err error
-	switch item.(type) {
-		case int8:
-			strVal = strconv.FormatInt(int64(item.(int8)), 10)
-			break
-	    	case int16:
-		    	strVal = strconv.FormatInt(int64(item.(int16)), 10)
-		    	break
-	    	case int32:
-		    	strVal = strconv.FormatInt(int64(item.(int32)), 10)
-		    	break
-	    	case int64:
-		    	strVal = strconv.FormatInt(item.(int64), 10)
-		    	break
-	    	case int:
-		    	strVal = strconv.FormatInt(int64(item.(int)), 10)
-		    	break
-		case uint8:
-			strVal = strconv.FormatUint(uint64(item.(uint8)), 10)
-			break
-		case uint16:
-			strVal = strconv.FormatUint(uint64(item.(uint16)), 10)
-			break
-		case uint32:
-			strVal = strconv.FormatUint(uint64(item.(uint32)), 10)
-			break
-		case uint64:
-			strVal = strconv.FormatUint(item.(uint64), 10)
-			break
-		case uint:
-			strVal = strconv.FormatUint(uint64(item.(uint)), 10)
-			break
-	    	case string:
-		    	strVal = item.(string)
-		    	break
-	    	case bool:
-		    	strVal = strconv.FormatBool(item.(bool))
-		    	break
-	    	case float32:
-		    	strVal = strconv.FormatFloat(float64(item.(float32)), 'f', -1, 32)
-		    	break
-	    	case float64:
-	    		strVal = strconv.FormatFloat(item.(float64), 'f', -1, 64)
-	    		break
-	     	default:
-	     		strVal = fmt.Sprintf("%v", item)
-	     		break
+	value := *item
+
+	switch value.(type) {
+	case int8:
+		strVal = strconv.FormatInt(int64(value.(int8)), 10)
+		break
+	case int16:
+		strVal = strconv.FormatInt(int64(value.(int16)), 10)
+		break
+	case int32:
+		strVal = strconv.FormatInt(int64(value.(int32)), 10)
+		break
+	case int64:
+		strVal = strconv.FormatInt(value.(int64), 10)
+		break
+	case int:
+		strVal = strconv.FormatInt(int64(value.(int)), 10)
+		break
+	case uint8:
+		strVal = strconv.FormatUint(uint64(value.(uint8)), 10)
+		break
+	case uint16:
+		strVal = strconv.FormatUint(uint64(value.(uint16)), 10)
+		break
+	case uint32:
+		strVal = strconv.FormatUint(uint64(value.(uint32)), 10)
+		break
+	case uint64:
+		strVal = strconv.FormatUint(value.(uint64), 10)
+		break
+	case uint:
+		strVal = strconv.FormatUint(uint64(value.(uint)), 10)
+		break
+	case string:
+		strVal = value.(string)
+		break
+	case bool:
+		strVal = strconv.FormatBool(value.(bool))
+		break
+	case float32:
+		strVal = strconv.FormatFloat(float64(value.(float32)), 'f', -1, 32)
+		break
+	case float64:
+		strVal = strconv.FormatFloat(value.(float64), 'f', -1, 64)
+		break
+	default:
+		strVal = fmt.Sprintf("%v", *item)
+		break
 	}
 	return strVal, err
 }
