@@ -64,6 +64,7 @@ func FormatComplex(template string, args map[string]interface{}) string {
 			errStr += err.Error()
 			errStr += "\n"
 		}
+		// formattedStr = strVal + arg
 		formattedStr = strings.Replace(formattedStr, arg, strVal, -1)
 	}
 	if len(errStr) > 0 {
@@ -81,34 +82,34 @@ func getItemAsStr(item *interface{}) (string, error) {
 
 	switch value.(type) {
 	case int8:
-		strVal = strconv.FormatInt(int64(value.(int8)), 10)
+		strVal = NumericToStr[int8](value.(int8), 10)
 		break
 	case int16:
-		strVal = strconv.FormatInt(int64(value.(int16)), 10)
+		strVal = NumericToStr[int16](value.(int16), 10)
 		break
 	case int32:
-		strVal = strconv.FormatInt(int64(value.(int32)), 10)
+		strVal = NumericToStr[int32](value.(int32), 10)
 		break
 	case int64:
-		strVal = strconv.FormatInt(value.(int64), 10)
+		strVal = NumericToStr[int64](value.(int64), 10)
 		break
 	case int:
-		strVal = strconv.FormatInt(int64(value.(int)), 10)
+		strVal = NumericToStr[int](value.(int), 10)
 		break
 	case uint8:
-		strVal = strconv.FormatUint(uint64(value.(uint8)), 10)
+		strVal = NumericToStr[uint8](value.(uint8), 10)
 		break
 	case uint16:
-		strVal = strconv.FormatUint(uint64(value.(uint16)), 10)
+		strVal = NumericToStr[uint16](value.(uint16), 10)
 		break
 	case uint32:
-		strVal = strconv.FormatUint(uint64(value.(uint32)), 10)
+		strVal = NumericToStr[uint32](value.(uint32), 10)
 		break
 	case uint64:
-		strVal = strconv.FormatUint(value.(uint64), 10)
+		strVal = NumericToStr[uint64](value.(uint64), 10)
 		break
 	case uint:
-		strVal = strconv.FormatUint(uint64(value.(uint)), 10)
+		strVal = NumericToStr[uint](value.(uint), 10)
 		break
 	case string:
 		strVal = value.(string)

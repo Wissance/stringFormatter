@@ -16,11 +16,11 @@ func TestNumericToString(t *testing.T) {
 }
 
 func convertUnsignedAndCheck[TN Numeric](t *testing.T, number TN, base TN, expectedStr string) {
-	result := NumericToStr(number, false, base)
+	result := NumericToStr(number /*false,*/, base)
 	assert.Equal(t, expectedStr, result)
 }
 
 func convertSignedAndCheck[TN Numeric](t *testing.T, number TN, base TN, expectedStr string) {
-	result := NumericToStr(number, true, base)
+	result := NumericToStr(number /*true,*/, base)
 	assert.Equal(t, expectedStr, result)
 }

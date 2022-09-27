@@ -8,17 +8,15 @@ type Numeric interface {
 
 const maxNumericLength = 20
 
-func NumericToStr[T Numeric](value T, signed bool, base T) string {
+func NumericToStr[T Numeric](value T /*signed bool,*/, base T) string {
 	// we make 20 symbols because uint64 max is 18446744073709551615  = 20 digits
 	actual := value
 	str := make([]byte, maxNumericLength)
 	neg := false
 	digits := 0
-	if signed {
-		if value < 0 {
-			actual = T(math.Abs(float64(actual)))
-			neg = true
-		}
+	if value < 0 {
+		actual = T(math.Abs(float64(actual)))
+		neg = true
 	}
 
 	for i, _ := range str {
