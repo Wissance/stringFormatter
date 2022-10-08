@@ -1,6 +1,7 @@
 package stringFormatter
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/golang/glog"
 	"strconv"
@@ -27,7 +28,9 @@ func Format(template string, args ...interface{}) string {
 		return template
 	}
 	errStr := ""
-	formattedStr := template
+	//formattedStr := template
+	placeholdersVals := map[string]string{}
+	//make(map[string]string, len(args))
 	for index, val := range args {
 		arg := "{" + strconv.Itoa(index) + "}"
 		strVal, err := getItemAsStr(val)
@@ -35,13 +38,60 @@ func Format(template string, args ...interface{}) string {
 			errStr += err.Error()
 			errStr += "\n"
 		}
-		formattedStr = strings.Replace(formattedStr, arg, strVal, -1)
+		placeholdersVals[arg] = strVal
+		// formattedStr = strings.Replace(formattedStr, arg, strVal, -1)
+	}
+
+	//formattedStr := ""
+	var formattedStr bytes.Buffer
+
+	templateLen := len(template)
+	j := -1
+	for i := range template {
+		if i <= j {
+			continue
+		}
+		if template[i] == '{' {
+			// possibly it is a template placeholder
+			if i == templateLen-1 {
+				break
+			}
+			if template[i+1] == '{' { // todo: umv: this not considering {{0}}
+				formattedStr.WriteByte('{')
+				continue
+			} else {
+				// find end of placeholder
+				j = i
+				for {
+					if i+1 == templateLen {
+						break
+					}
+					j++
+					if template[j] == '}' {
+						break
+					}
+				}
+				placeholder := template[i : j+1]
+				p, ok := placeholdersVals[placeholder]
+				if ok {
+					formattedStr.WriteString(p)
+					i = j
+				} else {
+					// there are no placeholders for that value, so we don't have something to replace
+					formattedStr.WriteString(placeholder)
+				}
+			}
+
+		} else {
+			j = i
+			formattedStr.WriteByte(template[i])
+		}
 	}
 
 	if len(errStr) > 0 {
 		glog.Warning(errStr)
 	}
-	return formattedStr
+	return formattedStr.String()
 }
 
 // FormatComplex
@@ -55,7 +105,7 @@ func FormatComplex(template string, args map[string]interface{}) string {
 	if args == nil {
 		return template
 	}
-    errStr := ""
+	errStr := ""
 	formattedStr := template
 	for key, val := range args {
 		arg := "{" + key + "}"
@@ -64,13 +114,14 @@ func FormatComplex(template string, args map[string]interface{}) string {
 			errStr += err.Error()
 			errStr += "\n"
 		}
+		// todo: ignore double curly brackets
 		formattedStr = strings.Replace(formattedStr, arg, strVal, -1)
 	}
 	if len(errStr) > 0 {
 		glog.Warning(errStr)
 	}
 
-    return formattedStr
+	return formattedStr
 }
 
 // todo: umv: impl format passing as param
@@ -78,51 +129,51 @@ func getItemAsStr(item interface{}) (string, error) {
 	var strVal string
 	var err error
 	switch item.(type) {
-		case int8:
-			strVal = strconv.FormatInt(int64(item.(int8)), 10)
-			break
-	    	case int16:
-		    	strVal = strconv.FormatInt(int64(item.(int16)), 10)
-		    	break
-	    	case int32:
-		    	strVal = strconv.FormatInt(int64(item.(int32)), 10)
-		    	break
-	    	case int64:
-		    	strVal = strconv.FormatInt(item.(int64), 10)
-		    	break
-	    	case int:
-		    	strVal = strconv.FormatInt(int64(item.(int)), 10)
-		    	break
-		case uint8:
-			strVal = strconv.FormatUint(uint64(item.(uint8)), 10)
-			break
-		case uint16:
-			strVal = strconv.FormatUint(uint64(item.(uint16)), 10)
-			break
-		case uint32:
-			strVal = strconv.FormatUint(uint64(item.(uint32)), 10)
-			break
-		case uint64:
-			strVal = strconv.FormatUint(item.(uint64), 10)
-			break
-		case uint:
-			strVal = strconv.FormatUint(uint64(item.(uint)), 10)
-			break
-	    	case string:
-		    	strVal = item.(string)
-		    	break
-	    	case bool:
-		    	strVal = strconv.FormatBool(item.(bool))
-		    	break
-	    	case float32:
-		    	strVal = strconv.FormatFloat(float64(item.(float32)), 'f', -1, 32)
-		    	break
-	    	case float64:
-	    		strVal = strconv.FormatFloat(item.(float64), 'f', -1, 64)
-	    		break
-	     	default:
-	     		strVal = fmt.Sprintf("%v", item)
-	     		break
+	case int8:
+		strVal = strconv.FormatInt(int64(item.(int8)), 10)
+		break
+	case int16:
+		strVal = strconv.FormatInt(int64(item.(int16)), 10)
+		break
+	case int32:
+		strVal = strconv.FormatInt(int64(item.(int32)), 10)
+		break
+	case int64:
+		strVal = strconv.FormatInt(item.(int64), 10)
+		break
+	case int:
+		strVal = strconv.FormatInt(int64(item.(int)), 10)
+		break
+	case uint8:
+		strVal = strconv.FormatUint(uint64(item.(uint8)), 10)
+		break
+	case uint16:
+		strVal = strconv.FormatUint(uint64(item.(uint16)), 10)
+		break
+	case uint32:
+		strVal = strconv.FormatUint(uint64(item.(uint32)), 10)
+		break
+	case uint64:
+		strVal = strconv.FormatUint(item.(uint64), 10)
+		break
+	case uint:
+		strVal = strconv.FormatUint(uint64(item.(uint)), 10)
+		break
+	case string:
+		strVal = item.(string)
+		break
+	case bool:
+		strVal = strconv.FormatBool(item.(bool))
+		break
+	case float32:
+		strVal = strconv.FormatFloat(float64(item.(float32)), 'f', -1, 32)
+		break
+	case float64:
+		strVal = strconv.FormatFloat(item.(float64), 'f', -1, 64)
+		break
+	default:
+		strVal = fmt.Sprintf("%v", item)
+		break
 	}
 	return strVal, err
 }
