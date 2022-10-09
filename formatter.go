@@ -30,10 +30,8 @@ func Format(template string, args ...interface{}) string {
 	var formattedStr = &strings.Builder{}
 	formattedStr.Grow(templateLen + 22*len(args))
 	j := -1
-	for i := range template {
-		if i <= j {
-			continue
-		}
+	for i := 0; i < templateLen; i++ {
+
 		if template[i] == '{' {
 			// possibly it is a template placeholder
 			if i == templateLen-1 {
@@ -54,8 +52,7 @@ func Format(template string, args ...interface{}) string {
 					}
 					j++
 				}
-				// placeholder := template[i : j+1]
-				// argNumberStr := placeholder[1 : j-i]
+
 				argNumberStr := template[i+1 : j]
 				var argNumber int
 				var err error
@@ -75,7 +72,7 @@ func Format(template string, args ...interface{}) string {
 					formattedStr.WriteString(argNumberStr)
 					formattedStr.WriteByte('}')
 				}
-
+				i = j
 			}
 
 		} else {
