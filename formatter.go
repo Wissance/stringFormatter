@@ -2,7 +2,6 @@ package stringFormatter
 
 import (
 	"fmt"
-	"github.com/golang/glog"
 	"strconv"
 	"strings"
 )
@@ -45,15 +44,15 @@ func Format(template string, args ...interface{}) string {
 				continue
 			} else {
 				// find end of placeholder
-				j = i
+				j = i + 2
 				for {
-					if i+1 == templateLen {
+					if j >= templateLen {
 						break
 					}
-					j++
 					if template[j] == '}' {
 						break
 					}
+					j++
 				}
 				// placeholder := template[i : j+1]
 				// argNumberStr := placeholder[1 : j-i]
@@ -61,7 +60,7 @@ func Format(template string, args ...interface{}) string {
 				var argNumber int
 				var err error
 				if len(argNumberStr) == 1 {
-					// this makes work a little faster
+					// this makes work a little faster then AtoI
 					argNumber = int(argNumberStr[0] - '0')
 				} else {
 					argNumber, err = strconv.Atoi(argNumberStr)
@@ -69,7 +68,7 @@ func Format(template string, args ...interface{}) string {
 				//argNumber, err := strconv.Atoi(argNumberStr)
 				if err == nil && len(args) > argNumber {
 					// get number from placeholder
-					strVal, _ := getItemAsStr(&args[argNumber])
+					strVal := getItemAsStr(&args[argNumber])
 					formattedStr.WriteString(strVal)
 				} else {
 					formattedStr.WriteByte('{')
@@ -99,30 +98,26 @@ func FormatComplex(template string, args map[string]interface{}) string {
 	if args == nil {
 		return template
 	}
-	errStr := ""
+
 	formattedStr := template
 	for key, val := range args {
 		arg := "{" + key + "}"
-		strVal, err := getItemAsStr(&val)
-		if err != nil {
-			errStr += err.Error()
-			errStr += "\n"
-		}
+		strVal := getItemAsStr(&val)
 		// todo: ignore double curly brackets
 		formattedStr = strings.Replace(formattedStr, arg, strVal, -1)
-	}
-	if len(errStr) > 0 {
-		glog.Warning(errStr)
 	}
 
 	return formattedStr
 }
 
 // todo: umv: impl format passing as param
-func getItemAsStr(item *interface{}) (string, error) {
+func getItemAsStr(item *interface{}) string {
 	var strVal string
-	var err error
+	//var err error
 	switch (*item).(type) {
+	case string:
+		strVal = (*item).(string)
+		break
 	case int8:
 		strVal = strconv.FormatInt(int64((*item).(int8)), 10)
 		break
@@ -153,9 +148,6 @@ func getItemAsStr(item *interface{}) (string, error) {
 	case uint:
 		strVal = strconv.FormatUint(uint64((*item).(uint)), 10)
 		break
-	case string:
-		strVal = (*item).(string)
-		break
 	case bool:
 		strVal = strconv.FormatBool((*item).(bool))
 		break
@@ -169,5 +161,5 @@ func getItemAsStr(item *interface{}) (string, error) {
 		strVal = fmt.Sprintf("%v", *item)
 		break
 	}
-	return strVal, err
+	return strVal
 }
