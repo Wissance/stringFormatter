@@ -27,9 +27,9 @@ func Format(template string, args ...interface{}) string {
 		return template
 	}
 
-	var formattedStr strings.Builder //bytes.Buffer
-
 	templateLen := len(template)
+	var formattedStr = &strings.Builder{}
+	formattedStr.Grow(templateLen + 22*len(args))
 	j := -1
 	for i := range template {
 		if i <= j {
@@ -61,7 +61,7 @@ func Format(template string, args ...interface{}) string {
 				var argNumber int
 				var err error
 				if len(argNumberStr) == 1 {
-					// this makes  work a little faster
+					// this makes work a little faster
 					argNumber = int(argNumberStr[0] - '0')
 				} else {
 					argNumber, err = strconv.Atoi(argNumberStr)
@@ -119,7 +119,7 @@ func FormatComplex(template string, args map[string]interface{}) string {
 }
 
 // todo: umv: impl format passing as param
-func getItemAsStr[T any](item *interface{}) (string, error) {
+func getItemAsStr(item *interface{}) (string, error) {
 	var strVal string
 	var err error
 	switch (*item).(type) {
