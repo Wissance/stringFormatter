@@ -74,8 +74,16 @@ func Format(template string, args ...interface{}) string {
 				// placeholder := template[i : j+1]
 				// argNumberStr := placeholder[1 : j-i]
 				argNumberStr := template[i+1 : j]
-				argNumber, err := strconv.Atoi(argNumberStr)
-				if err == nil && len(args) >= argNumber {
+				var argNumber int
+				var err error
+				if len(argNumberStr) == 1 {
+					// this makes  work a little faster
+					argNumber = int(argNumberStr[0] - '0')
+				} else {
+					argNumber, err = strconv.Atoi(argNumberStr)
+				}
+				//argNumber, err := strconv.Atoi(argNumberStr)
+				if err == nil && len(args) > argNumber {
 					// get number from placeholder
 					strVal, _ := getItemAsStr(args[argNumber])
 					formattedStr.WriteString(strVal)
