@@ -1,7 +1,6 @@
 package stringFormatter
 
 import (
-	"bytes"
 	"fmt"
 	"github.com/golang/glog"
 	"strconv"
@@ -27,23 +26,8 @@ func Format(template string, args ...interface{}) string {
 	if args == nil {
 		return template
 	}
-	/*errStr := ""
-	//formattedStr := template
-	placeholdersVals := map[string]string{}
-	//make(map[string]string, len(args))
-	for index, val := range args {
-		arg := "{" + strconv.Itoa(index) + "}"
-		strVal, err := getItemAsStr(val)
-		if err != nil {
-			errStr += err.Error()
-			errStr += "\n"
-		}
-		placeholdersVals[arg] = strVal
-		// formattedStr = strings.Replace(formattedStr, arg, strVal, -1)
-	}*/
 
-	//formattedStr := ""
-	var formattedStr bytes.Buffer
+	var formattedStr strings.Builder //bytes.Buffer
 
 	templateLen := len(template)
 	j := -1
@@ -92,14 +76,7 @@ func Format(template string, args ...interface{}) string {
 					formattedStr.WriteString(argNumberStr)
 					formattedStr.WriteByte('}')
 				}
-				/*p, ok := placeholdersVals[placeholder]
-				if ok {
-					formattedStr.WriteString(p)
-					i = j
-				} else {
-					// there are no placeholders for that value, so we don't have something to replace
-					formattedStr.WriteString(placeholder)
-				}*/
+
 			}
 
 		} else {
@@ -108,9 +85,6 @@ func Format(template string, args ...interface{}) string {
 		}
 	}
 
-	/*if len(errStr) > 0 {
-		glog.Warning(errStr)
-	}*/
 	return formattedStr.String()
 }
 
