@@ -27,7 +27,7 @@ func Format(template string, args ...interface{}) string {
 	if args == nil {
 		return template
 	}
-	errStr := ""
+	/*errStr := ""
 	//formattedStr := template
 	placeholdersVals := map[string]string{}
 	//make(map[string]string, len(args))
@@ -40,7 +40,7 @@ func Format(template string, args ...interface{}) string {
 		}
 		placeholdersVals[arg] = strVal
 		// formattedStr = strings.Replace(formattedStr, arg, strVal, -1)
-	}
+	}*/
 
 	//formattedStr := ""
 	var formattedStr bytes.Buffer
@@ -71,15 +71,27 @@ func Format(template string, args ...interface{}) string {
 						break
 					}
 				}
-				placeholder := template[i : j+1]
-				p, ok := placeholdersVals[placeholder]
+				// placeholder := template[i : j+1]
+				// argNumberStr := placeholder[1 : j-i]
+				argNumberStr := template[i+1 : j]
+				argNumber, err := strconv.Atoi(argNumberStr)
+				if err == nil && len(args) >= argNumber {
+					// get number from placeholder
+					strVal, _ := getItemAsStr(args[argNumber])
+					formattedStr.WriteString(strVal)
+				} else {
+					formattedStr.WriteByte('{')
+					formattedStr.WriteString(argNumberStr)
+					formattedStr.WriteByte('}')
+				}
+				/*p, ok := placeholdersVals[placeholder]
 				if ok {
 					formattedStr.WriteString(p)
 					i = j
 				} else {
 					// there are no placeholders for that value, so we don't have something to replace
 					formattedStr.WriteString(placeholder)
-				}
+				}*/
 			}
 
 		} else {
@@ -88,9 +100,9 @@ func Format(template string, args ...interface{}) string {
 		}
 	}
 
-	if len(errStr) > 0 {
+	/*if len(errStr) > 0 {
 		glog.Warning(errStr)
-	}
+	}*/
 	return formattedStr.String()
 }
 
