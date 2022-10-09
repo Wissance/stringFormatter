@@ -30,7 +30,13 @@ func Format(template string, args ...interface{}) string {
 	var formattedStr = &strings.Builder{}
 	formattedStr.Grow(templateLen + 22*len(args))
 	j := -1
-	for i := 0; i < templateLen; i++ {
+	start := strings.Index(template, "{")
+	if start < 0 {
+		return template
+	}
+
+	formattedStr.WriteString(template[:start])
+	for i := start; i < templateLen; i++ {
 
 		if template[i] == '{' {
 			// possibly it is a template placeholder
