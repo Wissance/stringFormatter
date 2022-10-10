@@ -12,6 +12,13 @@ func BenchmarkFormat3Arg(b *testing.B) {
 	}
 }
 
+func BenchmarkFormatComplex3Arg(b *testing.B) {
+	args := map[string]interface{}{"temperature": -10, "location": "Yekaterinburg", "time": time.Now().String(), "pressure": 725, "humidity": 34}
+	for i := 0; i < b.N; i++ {
+		_ = FormatComplex("Today is : {time}, atmosphere pressure is : {pressure} mmHg, temperature: {temperature}, location: {location}", args)
+	}
+}
+
 func BenchmarkFmt3Arg(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		_ = fmt.Sprintf("Today is : %s, atmosphere pressure is : %d mmHg, temperature: %f, location: %s", time.Now().String(), 725, -1.54, "Yekaterinburg")
