@@ -22,6 +22,8 @@ func TestStrFormatWithDoubleCurlyBrackets(t *testing.T) {
 	strFormatResult := Format("Hello i am {{0}}, my age is {1} and i am waiting for {2}, because i am {0}!",
 		"Michael Ushakov (Evillord666)", "34", "\"Great Success\"")
 	assert.Equal(t, "Hello i am {0}, my age is 34 and i am waiting for \"Great Success\", because i am Michael Ushakov (Evillord666)!", strFormatResult)
+	strFormatResult = Format("At the end {{0}}", "s")
+	assert.Equal(t, "At the end {0}", strFormatResult)
 }
 
 func TestStrFormatGeneric(t *testing.T) {
