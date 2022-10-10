@@ -1,4 +1,4 @@
-module stringFormatter
+module github.com/wissance/stringFormatter
 
 go 1.18
 
