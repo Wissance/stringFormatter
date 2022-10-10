@@ -1,5 +1,5 @@
 # StringFormatter
-A factory that helps to build text or strings from templates.
+A set of tools that helps to build strings from templates and process text that faster than fmt!!!.
 
 
 ![GitHub go.mod Go version (subdirectory of monorepo)](https://img.shields.io/github/go-mod/go-version/wissance/stringFormatter?style=plastic) 
@@ -8,11 +8,13 @@ A factory that helps to build text or strings from templates.
 ![GitHub Release Date](https://img.shields.io/github/release-date/wissance/stringFormatter) 
 ![GitHub release (latest by date)](https://img.shields.io/github/downloads/wissance/stringFormatter/v0.2.2/total?style=plastic)
 
-![Ferrum: A better Auth Server](/img/sf_cover.png)
+![String Fomatter: a convenient string formatting tool](/img/sf_cover.png)
 
 ## Features
 
-1. Text formatting with template
+1. Text formatting with template using traditional for C#, Python programmers style - {0}, {name} that faster then fmt does:
+![String Fomatter: a convenient string formatting tool](/img/benchmark2.png)
+
 2. Soon will be added new useful features
 
 ## Description
