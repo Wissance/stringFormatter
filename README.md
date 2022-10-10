@@ -13,7 +13,7 @@ A set of tools that helps to build strings from templates and process text that 
 ## Features
 
 1. Text formatting with template using traditional for C#, Python programmers style - {0}, {name} that faster then fmt does:
-![String Fomatter: a convenient string formatting tool](/img/benchmark2.png)
+![String Fomatter: a convenient string formatting tool](/img/benchmarks2.png)
 
 benchmark could be runned:
 * to see Format result - `go test -bench=Format -benchmem -cpu 1`
