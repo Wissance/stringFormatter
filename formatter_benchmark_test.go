@@ -32,6 +32,14 @@ func BenchmarkFormat5Arg(b *testing.B) {
 	}
 }
 
+func BenchmarkFormatComplex5Arg(b *testing.B) {
+	args := map[string]interface{}{"temperature": -10, "location": "Yekaterinburg", "time": time.Now().String(), "pressure": 725, "humidity": 34,
+		"longitude": "64.245", "latitude": "35.489"}
+	for i := 0; i < b.N; i++ {
+		_ = FormatComplex("Today is : {time}, atmosphere pressure is : {pressure} mmHg, temperature: {temperature}, location: {location}, coords:{longitude}-{latitude}", args)
+	}
+}
+
 func BenchmarkFmt5Arg(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		_ = fmt.Sprintf("Today is : %s, atmosphere pressure is : %d mmHg, temperature: %f, location: %s, coords: %s-%s",
