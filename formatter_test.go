@@ -18,6 +18,12 @@ func TestStrFormat(t *testing.T) {
 	assert.Equal(t, "No args ... : {0}, {1}, {2}", strFormatResult)
 }
 
+func TestStrFormatWithDoubleCurlyBrackets(t *testing.T) {
+	strFormatResult := Format("Hello i am {{0}}, my age is {1} and i am waiting for {2}, because i am {0}!",
+		"Michael Ushakov (Evillord666)", "34", "\"Great Success\"")
+	assert.Equal(t, "Hello i am {0}, my age is 34 and i am waiting for \"Great Success\", because i am Michael Ushakov (Evillord666)!", strFormatResult)
+}
+
 func TestStrFormatGeneric(t *testing.T) {
 	strFormat1 := "Here we are testing integers \"int8\": {0}, \"int16\": {1}, \"int32\": {2}, \"int64\": {3} and finally \"int\": {4}"
 	var v1 int8 = 8

@@ -58,27 +58,34 @@ func Format(template string, args ...interface{}) string {
 					}
 					j++
 				}
+				// double curly brackets processed here, convert {{N}} -> {N}
+				// so we catch here {{N}
+				if j+1 < templateLen && template[j+1] == '}' {
 
-				argNumberStr := template[i+1 : j]
-				var argNumber int
-				var err error
-				if len(argNumberStr) == 1 {
-					// this makes work a little faster then AtoI
-					argNumber = int(argNumberStr[0] - '0')
+					formattedStr.WriteString(template[i+1 : j+1])
+					i = j + 1
 				} else {
-					argNumber, err = strconv.Atoi(argNumberStr)
+					argNumberStr := template[i+1 : j]
+					var argNumber int
+					var err error
+					if len(argNumberStr) == 1 {
+						// this makes work a little faster then AtoI
+						argNumber = int(argNumberStr[0] - '0')
+					} else {
+						argNumber, err = strconv.Atoi(argNumberStr)
+					}
+					//argNumber, err := strconv.Atoi(argNumberStr)
+					if err == nil && len(args) > argNumber {
+						// get number from placeholder
+						strVal := getItemAsStr(&args[argNumber])
+						formattedStr.WriteString(strVal)
+					} else {
+						formattedStr.WriteByte('{')
+						formattedStr.WriteString(argNumberStr)
+						formattedStr.WriteByte('}')
+					}
+					i = j
 				}
-				//argNumber, err := strconv.Atoi(argNumberStr)
-				if err == nil && len(args) > argNumber {
-					// get number from placeholder
-					strVal := getItemAsStr(&args[argNumber])
-					formattedStr.WriteString(strVal)
-				} else {
-					formattedStr.WriteByte('{')
-					formattedStr.WriteString(argNumberStr)
-					formattedStr.WriteByte('}')
-				}
-				i = j
 			}
 
 		} else {
