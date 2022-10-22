@@ -6,6 +6,14 @@ import (
 	"strings"
 )
 
+type state byte
+
+const (
+	stateText state = iota
+	stateInCurly
+	stateEndCurly
+)
+
 // Format
 /* Func that makes string formatting from template
  * It differs from above function only by generic interface that allow to use only primitive data types:
@@ -27,71 +35,79 @@ func Format(template string, args ...interface{}) string {
 	}
 
 	templateLen := len(template)
-	var formattedStr = &strings.Builder{}
+	formattedStr := &strings.Builder{}
 	formattedStr.Grow(templateLen + 22*len(args))
-	j := -1
-	start := strings.Index(template, "{")
-	if start < 0 {
-		return template
+
+	last := 0
+	state := stateText
+
+	for i, c := range template {
+		switch state {
+		case stateText:
+			switch c {
+			case '{':
+				formattedStr.WriteString(template[last:i])
+				last = i
+				state = stateInCurly
+			case '}':
+				formattedStr.WriteString(template[last:i])
+				last = i
+				state = stateEndCurly
+			default:
+			}
+		case stateEndCurly:
+			if c != '}' {
+				return "error, but there is no error return parameter"
+			}
+			formattedStr.WriteRune('}')
+			last = i + 1
+			state = stateText
+		case stateInCurly:
+			// Safety check but old code doesn't have it so I won't waste cycles here
+			// if c < '0' || c > '9' {
+			// 	return "error, but there is no error return parameter"
+			// }
+			switch c {
+			case '}':
+				argNumberStr := template[last+1 : i]
+
+				var argNumber int
+				var err error
+				if len(argNumberStr) == 1 {
+					// this makes work a little faster then AtoI
+					argNumber = int(argNumberStr[0] - '0')
+				} else {
+					argNumber, err = strconv.Atoi(argNumberStr)
+				}
+
+				if err == nil && len(args) > argNumber {
+					// get number from placeholder
+					strVal := getItemAsStr(args[argNumber])
+					formattedStr.WriteString(strVal)
+				} else {
+					formattedStr.WriteString(template[last : i+1])
+				}
+
+				last = i + 1
+				state = stateText
+			case '{':
+				if last+1 != i {
+					return "error, but there is no error return parameter"
+				}
+				formattedStr.WriteByte('{')
+				last = i + 1
+				state = stateText
+			default:
+			}
+		}
 	}
 
-	formattedStr.WriteString(template[:start])
-	for i := start; i < templateLen; i++ {
-
-		if template[i] == '{' {
-			// possibly it is a template placeholder
-			if i == templateLen-1 {
-				break
-			}
-			if template[i+1] == '{' { // todo: umv: this not considering {{0}}
-				formattedStr.WriteByte('{')
-				continue
-			} else {
-				// find end of placeholder
-				j = i + 2
-				for {
-					if j >= templateLen {
-						break
-					}
-					if template[j] == '}' {
-						break
-					}
-					j++
-				}
-				// double curly brackets processed here, convert {{N}} -> {N}
-				// so we catch here {{N}
-				if j+1 < templateLen && template[j+1] == '}' {
-
-					formattedStr.WriteString(template[i+1 : j+1])
-					i = j + 1
-				} else {
-					argNumberStr := template[i+1 : j]
-					var argNumber int
-					var err error
-					if len(argNumberStr) == 1 {
-						// this makes work a little faster then AtoI
-						argNumber = int(argNumberStr[0] - '0')
-					} else {
-						argNumber, err = strconv.Atoi(argNumberStr)
-					}
-					//argNumber, err := strconv.Atoi(argNumberStr)
-					if err == nil && len(args) > argNumber {
-						// get number from placeholder
-						strVal := getItemAsStr(args[argNumber])
-						formattedStr.WriteString(strVal)
-					} else {
-						formattedStr.WriteByte('{')
-						formattedStr.WriteString(argNumberStr)
-						formattedStr.WriteByte('}')
-					}
-					i = j
-				}
-			}
-
-		} else {
-			j = i
-			formattedStr.WriteByte(template[i])
-		}
+	switch state {
+	case stateText:
+		formattedStr.WriteString(template[last:])
+		return formattedStr.String()
+	case stateInCurly, stateEndCurly:
+		return "error, but there is no error return parameter"
 	}
 
 	return formattedStr.String()
