@@ -6,7 +6,7 @@ A set of tools that helps to build strings from templates and process text that 
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/wissance/stringFormatter?style=plastic) 
 ![GitHub issues](https://img.shields.io/github/issues/wissance/stringFormatter?style=plastic)
 ![GitHub Release Date](https://img.shields.io/github/release-date/wissance/stringFormatter) 
-![GitHub release (latest by date)](https://img.shields.io/github/downloads/wissance/stringFormatter/v1.0.1/total?style=plastic)
+![GitHub release (latest by date)](https://img.shields.io/github/downloads/wissance/stringFormatter/v1.0.2/total?style=plastic)
 
 ![String Fomatter: a convenient string formatting tool](/img/sf_cover.png)
 
@@ -54,3 +54,8 @@ another example is:
 ```
 a result will be: "Current app settings are: ipAddr: 127.0.0.1, port: 5432, use ssl: false."
 
+### Contributors
+
+<a href="https://github.com/Wissance/stringFormatter/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=Wissance/stringFormatter" />
+</a>
