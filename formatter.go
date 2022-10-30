@@ -53,6 +53,11 @@ func Format(template string, args ...interface{}) string {
 					if j >= templateLen {
 						break
 					}
+					if template[j] == '{' {
+						// multiple nested curly brackets ...
+						formattedStr.WriteString(template[i:j])
+						i = j
+					}
 					if template[j] == '}' {
 						break
 					}
