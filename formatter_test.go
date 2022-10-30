@@ -18,6 +18,25 @@ func TestStrFormat(t *testing.T) {
 	assert.Equal(t, "No args ... : {0}, {1}, {2}", strFormatResult)
 }
 
+// TestStrFormatWithComplicatedText - this test represents issue with complicated text
+func TestStrFormatWithComplicatedText(t *testing.T) {
+	address := "grpcs://127.0.0.1"
+	stateMachineSource := `
+        {
+             "Comment": "Call Lambda with GRPC",
+             "StartAt": "CallLambdaWithGrpc",
+             "States": {"CallLambdaWithGrpc": {"Type": "Task", "Resource": "{0}:get ad user", "End": true}}
+        }`
+	actualSm := Format(stateMachineSource, address)
+	expectedSm := `
+        {
+             "Comment": "Call Lambda with GRPC",
+             "StartAt": "CallLambdaWithGrpc",
+             "States": {"CallLambdaWithGrpc": {"Type": "Task", "Resource": "grpcs://127.0.0.1:get ad user", "End": true}}
+        }`
+	assert.Equal(t, expectedSm, actualSm)
+}
+
 func TestStrFormatWithDoubleCurlyBrackets(t *testing.T) {
 	strFormatResult := Format("Hello i am {{0}}, my age is {1} and i am waiting for {2}, because i am {0}!",
 		"Michael Ushakov (Evillord666)", "34", "\"Great Success\"")
