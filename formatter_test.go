@@ -35,6 +35,21 @@ func TestStrFormatWithComplicatedText(t *testing.T) {
              "States": {"CallLambdaWithGrpc": {"Type": "Task", "Resource": "grpcs://127.0.0.1:get ad user", "End": true}}
         }`
 	assert.Equal(t, expectedSm, actualSm)
+
+	stateMachineSource = `
+        {
+             "Comment": "Call Lambda with GRPC",
+             "StartAt": "CallLambdaWithGrpc",
+             "States": {"CallLambdaWithGrpc": {"Type": "Task", "Resource": "{address}:get ad user", "End": true}}
+        }`
+	actualSm = FormatComplex(stateMachineSource, map[string]interface{}{"address": address})
+	expectedSm = `
+        {
+             "Comment": "Call Lambda with GRPC",
+             "StartAt": "CallLambdaWithGrpc",
+             "States": {"CallLambdaWithGrpc": {"Type": "Task", "Resource": "grpcs://127.0.0.1:get ad user", "End": true}}
+        }`
+	assert.Equal(t, expectedSm, actualSm)
 }
 
 func TestStrFormatWithDoubleCurlyBrackets(t *testing.T) {
