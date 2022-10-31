@@ -75,6 +75,13 @@ func TestStrFormatWithIndexOutOfArgsRange(t *testing.T) {
 	assert.Equal(t, expectedResult, actualResult)
 }
 
+func TestStrFormatComplexKeyNotFound(t *testing.T) {
+	template := "Hello: {username}, you earn {amount} $"
+	expectedResult := "Hello: {username}, you earn 1000 $"
+	actualResult := FormatComplex(template, map[string]interface{}{"amount": 1000})
+	assert.Equal(t, expectedResult, actualResult)
+}
+
 func TestStrFormatGeneric(t *testing.T) {
 	strFormat1 := "Here we are testing integers \"int8\": {0}, \"int16\": {1}, \"int32\": {2}, \"int64\": {3} and finally \"int\": {4}"
 	var v1 int8 = 8
