@@ -68,6 +68,13 @@ func TestStrFormatWithMultipleNestedCurlyBrackets(t *testing.T) {
 	assert.Equal(t, expectedStateMachine, actualStateMachine)
 }
 
+func TestStrFormatWithIndexOutOfArgsRange(t *testing.T) {
+	template := "{3} - rings to the immortal elfs, {7} to dwarfs, {9} to greedy people and {1} to control everything"
+	expectedResult := "3 - rings to the immortal elfs, {7} to dwarfs, {9} to greedy people and 1 to control everything"
+	actualResult := Format(template, "0", "1", "2", "3")
+	assert.Equal(t, expectedResult, actualResult)
+}
+
 func TestStrFormatGeneric(t *testing.T) {
 	strFormat1 := "Here we are testing integers \"int8\": {0}, \"int16\": {1}, \"int32\": {2}, \"int64\": {3} and finally \"int\": {4}"
 	var v1 int8 = 8
