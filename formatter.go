@@ -65,8 +65,7 @@ func Format(template string, args ...interface{}) string {
 				}
 				// double curly brackets processed here, convert {{N}} -> {N}
 				// so we catch here {{N}
-				if j+1 < templateLen && template[j+1] == '}' {
-
+				if j+1 < templateLen && template[j+1] == '}' && template[i+1] == '{' && template[i] == '{' {
 					formattedStr.WriteString(template[i+1 : j+1])
 					i = j + 1
 				} else {
