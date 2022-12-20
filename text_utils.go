@@ -26,6 +26,7 @@ func MapToString[TK string | int | uint | int32 | int64 | uint32 | uint64, TV an
 	empty := true
 	mapStr.Grow(len(*data) * 50)
 	lineData := map[string]interface{}{}
+
 	for k, v := range *data {
 		lineData[keyName] = k
 		lineData[valueName] = v
