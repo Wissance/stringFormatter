@@ -13,7 +13,7 @@ faster than `fmt`!!!.
 
 ## 1. Features
 
-1. Text formatting with template using traditional for C#, Python programmers style - {0}, {name} that faster then fmt does:
+1. Text formatting with template using traditional for `C#, Python programmers style` - `{0}`, `{name}` that faster then fmt does:
 ![String Formatter: a convenient string formatting tool](/img/benchmarks2.png)
 2. Additional text utilities:
    - convert ***map to string*** using one of predefined formats (see `text_utils.go`)
@@ -64,6 +64,8 @@ benchmark could be running using following commands from command line:
 
 ### 2. Text utilities
 
+#### 2.1 Map to string utility
+
 Map to string function allow to convert map to string using one of predefined line format:
 * `key => value`
 * `key : value`
@@ -82,6 +84,12 @@ options := map[string]interface{}{
 	assert.True(t, len(str) > 0)
 	assert.Equal(t, "connectTimeout : 1000, useSsl : true, login : sa, password : sa", str)
 ```
+
+#### 2.2 Benchmarks of the MapToStr function
+
+* to see `MapToStr` result - `go test -bench=MapToStr -benchmem -cpu 1`
+
+![MapToStr benchmarks](/img/map2str_benchmarks.png)
 
 ### 3. Contributors
 
