@@ -17,7 +17,7 @@ const (
 	ValueOnly                      MapLineFormat = valueArg
 )
 
-func MapToString[T any](data *map[string]T, format MapLineFormat, lineSeparator string) string {
+func MapToString[TK string | int | uint | int32 | int64 | uint32 | uint64, TV any](data *map[TK]TV, format MapLineFormat, lineSeparator string) string {
 
 	if data == nil || len(*data) == 0 {
 		return ""
