@@ -1,9 +1,13 @@
-package stringFormatter
+package stringFormatter_test
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/wissance/stringFormatter"
+)
 
 func BenchmarkMapToStringWith11Keys(b *testing.B) {
-	optionsMap := map[string]interface{}{
+	optionsMap := map[string]any{
 		"timeoutMS":                2000,
 		"connectTimeoutMS":         20000,
 		"maxPoolSize":              64,
@@ -18,6 +22,6 @@ func BenchmarkMapToStringWith11Keys(b *testing.B) {
 	}
 
 	for i := 0; i < b.N; i++ {
-		_ = MapToString(&optionsMap, KeyValueWithSemicolonSepFormat, ", ")
+		_ = stringFormatter.MapToString(optionsMap, "{key} : {value}", ", ")
 	}
 }

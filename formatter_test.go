@@ -1,145 +1,165 @@
-package stringFormatter
+package stringFormatter_test
 
 import (
 	"errors"
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+
+	"github.com/wissance/stringFormatter"
 )
 
-func TestStrFormat(t *testing.T) {
-	strFormatResult := Format("Hello i am {0}, my age is {1} and i am waiting for {2}, because i am {0}!",
-		"Michael Ushakov (Evillord666)", "34", "\"Great Success\"")
-	assert.Equal(t, "Hello i am Michael Ushakov (Evillord666), my age is 34 and i am waiting for \"Great Success\", because i am Michael Ushakov (Evillord666)!", strFormatResult)
+const _address = "grpcs://127.0.0.1"
 
-	strFormatResult = Format("We are wondering if these values would be replaced : {5}, {4}, {0}", "one", "two", "three")
-	assert.Equal(t, "We are wondering if these values would be replaced : {5}, {4}, one", strFormatResult)
+type Example struct {
+	Int    int
+	Str    string
+	Double float64
+	Err    error
+}
 
-	strFormatResult = Format("No args ... : {0}, {1}, {2}")
-	assert.Equal(t, "No args ... : {0}, {1}, {2}", strFormatResult)
+func TestFormat(t *testing.T) {
+	for name, test := range map[string]struct {
+		template string
+		args     []any
+		expected string
+	}{
+		"all args in place": {
+			template: "Hello i am {0}, my age is {1} and i am waiting for {2}, because i am {0}!",
+			args:     []any{"Michael Ushakov (Evillord666)", "34", `"Great Success"`},
+			expected: `Hello i am Michael Ushakov (Evillord666), my age is 34 and i am waiting for "Great Success", because i am Michael Ushakov (Evillord666)!`,
+		},
+		"too large index": {
+			template: "We are wondering if these values would be replaced : {5}, {4}, {0}",
+			args:     []any{"one", "two", "three"},
+			expected: "We are wondering if these values would be replaced : {5}, {4}, one",
+		},
+		"no args": {
+			template: "No args ... : {0}, {1}, {2}",
+			args:     nil,
+			expected: "No args ... : {0}, {1}, {2}",
+		},
+		"format json": {
+			template: `
+		    {
+		         "Comment": "Call Lambda with GRPC",
+		         "StartAt": "CallLambdaWithGrpc",
+		         "States": {"CallLambdaWithGrpc": {"Type": "Task", "Resource": "{0}:get ad user", "End": true}}
+		    }`,
+			args: []any{_address},
+			expected: `
+		    {
+		         "Comment": "Call Lambda with GRPC",
+		         "StartAt": "CallLambdaWithGrpc",
+		         "States": {"CallLambdaWithGrpc": {"Type": "Task", "Resource": "grpcs://127.0.0.1:get ad user", "End": true}}
+		    }`,
+		},
+		"multiple nested curly brackets": {
+			template: `{"StartAt": "S0", "States": {"S0": {"Type": "Map" {0}, ` +
+				`"Iterator": {"StartAt": "SI0", "States": {"SI0": {"Type": "Pass", "End": true}}}` +
+				`, "End": true}}}`,
+			args:     []any{""},
+			expected: `{"StartAt": "S0", "States": {"S0": {"Type": "Map" , "Iterator": {"StartAt": "SI0", "States": {"SI0": {"Type": "Pass", "End": true}}}, "End": true}}}`,
+		},
+		"indexes out of args range": {
+			template: "{3} - rings to the immortal elfs, {7} to dwarfs, {9} to greedy people and {1} to control everything",
+			args:     []any{"0", "1", "2", "3"},
+			expected: "3 - rings to the immortal elfs, {7} to dwarfs, {9} to greedy people and 1 to control everything",
+		},
+		"format integers": {
+			template: `Here we are testing integers "int8": {0}, "int16": {1}, "int32": {2}, "int64": {3} and finally "int": {4}`,
+			args:     []any{int8(8), int16(-16), int32(32), int64(-64), int(123)},
+			expected: `Here we are testing integers "int8": 8, "int16": -16, "int32": 32, "int64": -64 and finally "int": 123`,
+		},
+		"format unsigneds": {
+			template: `Here we are testing integers "uint8": {0}, "uint16": {1}, "uint32": {2}, "uint64": {3} and finally "uint": {4}`,
+			args:     []any{uint8(8), uint16(16), uint32(32), uint64(64), uint(128)},
+			expected: `Here we are testing integers "uint8": 8, "uint16": 16, "uint32": 32, "uint64": 64 and finally "uint": 128`,
+		},
+		"format floats": {
+			template: `Here we are testing floats "float32": {0}, "float64":{1}`,
+			args:     []any{float32(1.24), float64(1.56)},
+			expected: `Here we are testing floats "float32": 1.24, "float64":1.56`,
+		},
+		"format bools": {
+			template: `Here we are testing "bool" args: {0}, {1}`,
+			args:     []any{false, true},
+			expected: `Here we are testing "bool" args: false, true`,
+		},
+		"format complex": {
+			template: `Here we are testing "complex64" {0} and "complex128": {1}`,
+			args:     []any{complex64(complex(1.0, 6.0)), complex(2.3, 3.2)},
+			expected: `Here we are testing "complex64" (1+6i) and "complex128": (2.3+3.2i)`,
+		},
+		"doubly curly brackets": {
+			template: "Hello i am {{0}}, my age is {1} and i am waiting for {2}, because i am {0}!",
+			args:     []any{"Michael Ushakov (Evillord666)", "34", `"Great Success"`},
+			expected: `Hello i am {0}, my age is 34 and i am waiting for "Great Success", because i am Michael Ushakov (Evillord666)!`,
+		},
+		"doubly curly brackets at the end": {
+			template: "At the end {{0}}",
+			args:     []any{"s"},
+			expected: "At the end {0}",
+		},
+		"struct arg": {
+			template: "Example is: {0}",
+			args: []any{
+				Example{
+					Int:    123,
+					Str:    "This is a test str, nothing more special",
+					Double: -1.098743,
+					Err:    errors.New("main question error, is 42"),
+				},
+			},
+			expected: "Example is: {123 This is a test str, nothing more special -1.098743 main question error, is 42}",
+		},
+	} {
+		t.Run(name, func(t *testing.T) {
+			assert.Equal(t, test.expected, stringFormatter.Format(test.template, test.args...))
+		})
+	}
 }
 
 // TestStrFormatWithComplicatedText - this test represents issue with complicated text
-func TestStrFormatWithComplicatedText(t *testing.T) {
-	address := "grpcs://127.0.0.1"
-	stateMachineSource := `
-        {
-             "Comment": "Call Lambda with GRPC",
-             "StartAt": "CallLambdaWithGrpc",
-             "States": {"CallLambdaWithGrpc": {"Type": "Task", "Resource": "{0}:get ad user", "End": true}}
-        }`
-	actualSm := Format(stateMachineSource, address)
-	expectedSm := `
-        {
-             "Comment": "Call Lambda with GRPC",
-             "StartAt": "CallLambdaWithGrpc",
-             "States": {"CallLambdaWithGrpc": {"Type": "Task", "Resource": "grpcs://127.0.0.1:get ad user", "End": true}}
-        }`
-	assert.Equal(t, expectedSm, actualSm)
-
-	stateMachineSource = `
-        {
-             "Comment": "Call Lambda with GRPC",
-             "StartAt": "CallLambdaWithGrpc",
-             "States": {"CallLambdaWithGrpc": {"Type": "Task", "Resource": "{address}:get ad user", "End": true}}
-        }`
-	actualSm = FormatComplex(stateMachineSource, map[string]interface{}{"address": address})
-	expectedSm = `
-        {
-             "Comment": "Call Lambda with GRPC",
-             "StartAt": "CallLambdaWithGrpc",
-             "States": {"CallLambdaWithGrpc": {"Type": "Task", "Resource": "grpcs://127.0.0.1:get ad user", "End": true}}
-        }`
-	assert.Equal(t, expectedSm, actualSm)
-}
-
-func TestStrFormatWithDoubleCurlyBrackets(t *testing.T) {
-	strFormatResult := Format("Hello i am {{0}}, my age is {1} and i am waiting for {2}, because i am {0}!",
-		"Michael Ushakov (Evillord666)", "34", "\"Great Success\"")
-	assert.Equal(t, "Hello i am {0}, my age is 34 and i am waiting for \"Great Success\", because i am Michael Ushakov (Evillord666)!", strFormatResult)
-	strFormatResult = Format("At the end {{0}}", "s")
-	assert.Equal(t, "At the end {0}", strFormatResult)
-}
-
-func TestStrFormatWithMultipleNestedCurlyBrackets(t *testing.T) {
-	iteratorDef := `"Iterator": {"StartAt": "SI0", "States": {"SI0": {"Type": "Pass", "End": true}}}`
-	stateMachineSource := `{"StartAt": "S0", "States": {"S0": {"Type": "Map" {0}, ` + iteratorDef + `, "End": true}}}`
-	expectedStateMachine := `{"StartAt": "S0", "States": {"S0": {"Type": "Map" , "Iterator": {"StartAt": "SI0", "States": {"SI0": {"Type": "Pass", "End": true}}}, "End": true}}}`
-	actualStateMachine := Format(stateMachineSource, "")
-	assert.Equal(t, expectedStateMachine, actualStateMachine)
-}
-
-func TestStrFormatWithIndexOutOfArgsRange(t *testing.T) {
-	template := "{3} - rings to the immortal elfs, {7} to dwarfs, {9} to greedy people and {1} to control everything"
-	expectedResult := "3 - rings to the immortal elfs, {7} to dwarfs, {9} to greedy people and 1 to control everything"
-	actualResult := Format(template, "0", "1", "2", "3")
-	assert.Equal(t, expectedResult, actualResult)
-}
-
-func TestStrFormatComplexKeyNotFound(t *testing.T) {
-	template := "Hello: {username}, you earn {amount} $"
-	expectedResult := "Hello: {username}, you earn 1000 $"
-	actualResult := FormatComplex(template, map[string]interface{}{"amount": 1000})
-	assert.Equal(t, expectedResult, actualResult)
-}
-
-func TestStrFormatGeneric(t *testing.T) {
-	strFormat1 := "Here we are testing integers \"int8\": {0}, \"int16\": {1}, \"int32\": {2}, \"int64\": {3} and finally \"int\": {4}"
-	var v1 int8 = 8
-	var v2 int16 = -16
-	var v3 int32 = 32
-	var v4 int64 = -64
-	var v5 int = 123
-
-	strFormatResult := Format(strFormat1, v1, v2, v3, v4, v5)
-	assert.Equal(t, "Here we are testing integers \"int8\": 8, \"int16\": -16, \"int32\": 32, \"int64\": -64 and finally \"int\": 123", strFormatResult)
-
-	strFormat2 := "Here we are testing integers \"uint8\": {0}, \"uint16\": {1}, \"uint32\": {2}, \"uint64\": {3} and finally \"uint\": {4}"
-	var v6 uint8 = 8
-	var v7 uint16 = 16
-	var v8 uint32 = 32
-	var v9 uint64 = 64
-	var v10 uint = 128
-
-	strFormatResult = Format(strFormat2, v6, v7, v8, v9, v10)
-	assert.Equal(t, "Here we are testing integers \"uint8\": 8, \"uint16\": 16, \"uint32\": 32, \"uint64\": 64 and finally \"uint\": 128", strFormatResult)
-
-	strFormat3 := "Here we are testing floats \"float32\": {0}, \"float64\":{1}"
-	var v11 float32 = 1.24
-	var v12 float64 = 1.56
-	strFormatResult = Format(strFormat3, v11, v12)
-	assert.Equal(t, "Here we are testing floats \"float32\": 1.24, \"float64\":1.56", strFormatResult)
-
-	strFormat4 := "Here we are testing \"bool\" args: {0}, {1}"
-	var v13 bool = false
-	var v14 bool = true
-	strFormatResult = Format(strFormat4, v13, v14)
-	assert.Equal(t, "Here we are testing \"bool\" args: false, true", strFormatResult)
-
-	strFormat5 := "Here we are testing \"complex64\" {0} and \"complex128\": {1}"
-	var v15 complex64 = complex(1.0, 6.0)
-	var v16 complex128 = complex(2.3, 3.2)
-	strFormatResult = Format(strFormat5, v15, v16)
-	assert.Equal(t, "Here we are testing \"complex64\" (1+6i) and \"complex128\": (2.3+3.2i)", strFormatResult)
-}
-
-func TestStrFormatComplex(t *testing.T) {
-	strFormatResult := FormatComplex("Hello {user} what are you doing here {app} ?", map[string]interface{}{"user": "vpupkin", "app": "mn_console"})
-	assert.Equal(t, "Hello vpupkin what are you doing here mn_console ?", strFormatResult)
-
-	strFormatResult = FormatComplex("Current app settings are: ipAddr: {ipaddr}, port: {port}, use ssl: {ssl}.", map[string]interface{}{"ipaddr": "127.0.0.1", "port": 5432, "ssl": false})
-	assert.Equal(t, "Current app settings are: ipAddr: 127.0.0.1, port: 5432, use ssl: false.", strFormatResult)
-}
-
-func TestStrFormatStruct(t *testing.T) {
-	type Example struct {
-		Int    int
-		Str    string
-		Double float64
-		Err    error
+func TestFormatComplex(t *testing.T) {
+	for name, test := range map[string]struct {
+		template string
+		args     map[string]any
+		expected string
+	}{
+		"format json": {
+			template: `
+			{
+				"Comment": "Call Lambda with GRPC",
+				"StartAt": "CallLambdaWithGrpc",
+				"States": {"CallLambdaWithGrpc": {"Type": "Task", "Resource": "{address}:get ad user", "End": true}}
+			}`,
+			args: map[string]any{"address": _address},
+			expected: `
+			{
+				"Comment": "Call Lambda with GRPC",
+				"StartAt": "CallLambdaWithGrpc",
+				"States": {"CallLambdaWithGrpc": {"Type": "Task", "Resource": "grpcs://127.0.0.1:get ad user", "End": true}}
+			}`,
+		},
+		"key not found": {
+			template: "Hello: {username}, you earn {amount} $",
+			args:     map[string]any{"amount": 1000},
+			expected: "Hello: {username}, you earn 1000 $",
+		},
+		"dialog": {
+			template: "Hello {user} what are you doing here {app} ?",
+			args:     map[string]any{"user": "vpupkin", "app": "mn_console"},
+			expected: "Hello vpupkin what are you doing here mn_console ?",
+		},
+		"info message": {
+			template: "Current app settings are: ipAddr: {ipaddr}, port: {port}, use ssl: {ssl}.",
+			args:     map[string]any{"ipaddr": "127.0.0.1", "port": 5432, "ssl": false},
+			expected: "Current app settings are: ipAddr: 127.0.0.1, port: 5432, use ssl: false.",
+		},
+	} {
+		t.Run(name, func(t *testing.T) {
+			assert.Equal(t, test.expected, stringFormatter.FormatComplex(test.template, test.args))
+		})
 	}
-
-	example1 := Example{Int: 123, Str: "This is a test str, nothing more special", Double: -1.098743, Err: errors.New("main question error, is 42")}
-	result := Format("Example is: {0}", example1)
-	assert.NotEmpty(t, result)
-	assert.Equal(t, "Example is: {123 This is a test str, nothing more special -1.098743 main question error, is 42}", result)
 }

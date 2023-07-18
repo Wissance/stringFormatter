@@ -21,80 +21,81 @@ import (
  *    - args - values that are using for formatting with template
  * Returns formatted string
  */
-func Format(template string, args ...interface{}) string {
+func Format(template string, args ...any) string {
 	if args == nil {
 		return template
 	}
 
-	templateLen := len(template)
-	var formattedStr = &strings.Builder{}
-	formattedStr.Grow(templateLen + 22*len(args))
-	j := -1
 	start := strings.Index(template, "{")
 	if start < 0 {
 		return template
 	}
 
+	templateLen := len(template)
+	formattedStr := &strings.Builder{}
+	formattedStr.Grow(templateLen + 22*len(args))
+	j := -1 //nolint:ineffassign
+
 	formattedStr.WriteString(template[:start])
 	for i := start; i < templateLen; i++ {
-
 		if template[i] == '{' {
 			// possibly it is a template placeholder
 			if i == templateLen-1 {
 				break
 			}
+
 			if template[i+1] == '{' { // todo: umv: this not considering {{0}}
 				formattedStr.WriteByte('{')
 				continue
-			} else {
-				// find end of placeholder
-				j = i + 2
-				for {
-					if j >= templateLen {
-						break
-					}
-					if template[j] == '{' {
-						// multiple nested curly brackets ...
-						formattedStr.WriteString(template[i:j])
-						i = j
-					}
-					if template[j] == '}' {
-						break
-					}
-					j++
+			}
+			// find end of placeholder
+			j = i + 2
+			for {
+				if j >= templateLen {
+					break
 				}
-				// double curly brackets processed here, convert {{N}} -> {N}
-				// so we catch here {{N}
-				if j+1 < templateLen && template[j+1] == '}' && template[i-1] == '{' {
 
-					formattedStr.WriteString(template[i+1 : j+1])
-					i = j + 1
-				} else {
-					argNumberStr := template[i+1 : j]
-					var argNumber int
-					var err error
-					if len(argNumberStr) == 1 {
-						// this makes work a little faster then AtoI
-						argNumber = int(argNumberStr[0] - '0')
-					} else {
-						argNumber, err = strconv.Atoi(argNumberStr)
-					}
-					//argNumber, err := strconv.Atoi(argNumberStr)
-					if err == nil && len(args) > argNumber {
-						// get number from placeholder
-						strVal := getItemAsStr(&args[argNumber])
-						formattedStr.WriteString(strVal)
-					} else {
-						formattedStr.WriteByte('{')
-						formattedStr.WriteString(argNumberStr)
-						formattedStr.WriteByte('}')
-					}
+				if template[j] == '{' {
+					// multiple nested curly brackets ...
+					formattedStr.WriteString(template[i:j])
 					i = j
 				}
-			}
 
+				if template[j] == '}' {
+					break
+				}
+
+				j++
+			}
+			// double curly brackets processed here, convert {{N}} -> {N}
+			// so we catch here {{N}
+			if j+1 < templateLen && template[j+1] == '}' && template[i-1] == '{' {
+				formattedStr.WriteString(template[i+1 : j+1])
+				i = j + 1
+			} else {
+				argNumberStr := template[i+1 : j]
+				var argNumber int
+				var err error
+				if len(argNumberStr) == 1 {
+					// this makes work a little faster than AtoI
+					argNumber = int(argNumberStr[0] - '0')
+				} else {
+					argNumber, err = strconv.Atoi(argNumberStr)
+				}
+				//argNumber, err := strconv.Atoi(argNumberStr)
+				if err == nil && len(args) > argNumber {
+					// get number from placeholder
+					strVal := getItemAsStr(&args[argNumber])
+					formattedStr.WriteString(strVal)
+				} else {
+					formattedStr.WriteByte('{')
+					formattedStr.WriteString(argNumberStr)
+					formattedStr.WriteByte('}')
+				}
+				i = j
+			}
 		} else {
-			j = i
+			j = i //nolint:ineffassign
 			formattedStr.WriteByte(template[i])
 		}
 	}
@@ -109,72 +110,70 @@ func Format(template string, args ...interface{}) string {
  *    - args - values (dictionary: string key - any value) that are using for formatting with template
  * Returns formatted string
  */
-func FormatComplex(template string, args map[string]interface{}) string {
+func FormatComplex(template string, args map[string]any) string {
 	if args == nil {
 		return template
 	}
 
-	templateLen := len(template)
-	var formattedStr = &strings.Builder{}
-	formattedStr.Grow(templateLen + 22*len(args))
-	j := -1
 	start := strings.Index(template, "{")
 	if start < 0 {
 		return template
 	}
 
+	templateLen := len(template)
+	formattedStr := &strings.Builder{}
+	formattedStr.Grow(templateLen + 22*len(args))
+	j := -1 //nolint:ineffassign
 	formattedStr.WriteString(template[:start])
 	for i := start; i < templateLen; i++ {
-
 		if template[i] == '{' {
 			// possibly it is a template placeholder
 			if i == templateLen-1 {
 				break
 			}
+
 			if template[i+1] == '{' { // todo: umv: this not considering {{0}}
 				formattedStr.WriteByte('{')
 				continue
-			} else {
-				// find end of placeholder
-				j = i + 2
-				for {
-					if j >= templateLen {
-						break
-					}
-					if template[j] == '{' {
-						// multiple nested curly brackets ...
-						formattedStr.WriteString(template[i:j])
-						i = j
-					}
-					if template[j] == '}' {
-						break
-					}
-					j++
-				}
-				// double curly brackets processed here, convert {{N}} -> {N}
-				// so we catch here {{N}
-				if j+1 < templateLen && template[j+1] == '}' {
-
-					formattedStr.WriteString(template[i+1 : j+1])
-					i = j + 1
-				} else {
-					argNumberStr := template[i+1 : j]
-					arg, ok := args[argNumberStr]
-					if ok {
-						// get number from placeholder
-						strVal := getItemAsStr(&arg)
-						formattedStr.WriteString(strVal)
-					} else {
-						formattedStr.WriteByte('{')
-						formattedStr.WriteString(argNumberStr)
-						formattedStr.WriteByte('}')
-					}
-					i = j
-				}
 			}
 
+			// find end of placeholder
+			j = i + 2
+			for {
+				if j >= templateLen {
+					break
+				}
+				if template[j] == '{' {
+					// multiple nested curly brackets ...
+					formattedStr.WriteString(template[i:j])
+					i = j
+				}
+				if template[j] == '}' {
+					break
+				}
+				j++
+			}
+			// double curly brackets processed here, convert {{N}} -> {N}
+			// so we catch here {{N}
+			if j+1 < templateLen && template[j+1] == '}' {
+				formattedStr.WriteString(template[i+1 : j+1])
+				i = j + 1
+			} else {
+				argNumberStr := template[i+1 : j]
+				arg, ok := args[argNumberStr]
+				if ok {
+					// get number from placeholder
+					strVal := getItemAsStr(&arg)
+					formattedStr.WriteString(strVal)
+				} else {
+					formattedStr.WriteByte('{')
+					formattedStr.WriteString(argNumberStr)
+					formattedStr.WriteByte('}')
+				}
+				i = j
+			}
 		} else {
-			j = i
+			j = i //nolint:ineffassign
 			formattedStr.WriteByte(template[i])
 		}
 	}
@@ -183,55 +182,37 @@ func FormatComplex(template string, args map[string]interface{}) string {
 }
 
 // todo: umv: impl format passing as param
-func getItemAsStr(item *interface{}) string {
-	var strVal string
-	//var err error
-	switch (*item).(type) {
+func getItemAsStr(item *any) string {
+	switch v := (*item).(type) {
 	case string:
-		strVal = (*item).(string)
-		break
+		return v
 	case int8:
-		strVal = strconv.FormatInt(int64((*item).(int8)), 10)
-		break
+		return strconv.FormatInt(int64(v), 10)
 	case int16:
-		strVal = strconv.FormatInt(int64((*item).(int16)), 10)
-		break
+		return strconv.FormatInt(int64(v), 10)
 	case int32:
-		strVal = strconv.FormatInt(int64((*item).(int32)), 10)
-		break
+		return strconv.FormatInt(int64(v), 10)
 	case int64:
-		strVal = strconv.FormatInt((*item).(int64), 10)
-		break
+		return strconv.FormatInt(v, 10)
 	case int:
-		strVal = strconv.FormatInt(int64((*item).(int)), 10)
-		break
+		return strconv.FormatInt(int64(v), 10)
 	case uint8:
-		strVal = strconv.FormatUint(uint64((*item).(uint8)), 10)
-		break
+		return strconv.FormatUint(uint64(v), 10)
 	case uint16:
-		strVal = strconv.FormatUint(uint64((*item).(uint16)), 10)
-		break
+		return strconv.FormatUint(uint64(v), 10)
 	case uint32:
-		strVal = strconv.FormatUint(uint64((*item).(uint32)), 10)
-		break
+		return strconv.FormatUint(uint64(v), 10)
 	case uint64:
-		strVal = strconv.FormatUint((*item).(uint64), 10)
-		break
+		return strconv.FormatUint(v, 10)
 	case uint:
-		strVal = strconv.FormatUint(uint64((*item).(uint)), 10)
-		break
+		return strconv.FormatUint(uint64(v), 10)
 	case bool:
-		strVal = strconv.FormatBool((*item).(bool))
-		break
+		return strconv.FormatBool(v)
 	case float32:
-		strVal = strconv.FormatFloat(float64((*item).(float32)), 'f', -1, 32)
-		break
+		return strconv.FormatFloat(float64(v), 'f', -1, 32)
 	case float64:
-		strVal = strconv.FormatFloat((*item).(float64), 'f', -1, 64)
-		break
+		return strconv.FormatFloat(v, 'f', -1, 64)
 	default:
-		strVal = fmt.Sprintf("%v", *item)
-		break
+		return fmt.Sprintf("%v", v)
 	}
-	return strVal
 }

@@ -35,7 +35,7 @@ i.e. you have following template:  `"Hello {0}, we are greeting you here: {1}!"`
 if you call Format with args "manager" and "salesApp" :
 
 ```go
-formattedStr := Format("Hello {0}, we are greeting you here: {1}!", "manager", "salesApp")
+formattedStr := stringFormatter.Format("Hello {0}, we are greeting you here: {1}!", "manager", "salesApp")
 ```
 
 you get string `"Hello manager, we are greeting you here: salesApp!"`
@@ -44,15 +44,17 @@ you get string `"Hello manager, we are greeting you here: salesApp!"`
 
 i.e. you have following template: `"Hello {user} what are you doing here {app} ?"`
 
-if you call `FormatComplex` with args `"vpupkin"` and `"mn_console"` `FormatComplex("Hello {user} what are you doing here {app} ?", map[string]interface{}{"user":"vpupkin", "app":"mn_console"})`
+if you call `FormatComplex` with args `"vpupkin"` and `"mn_console"` `FormatComplex("Hello {user} what are you doing here {app} ?", map[string]any{"user":"vpupkin", "app":"mn_console"})`
 
 you get string `"Hello vpupkin what are you doing here mn_console ?"`
 
 another example is:
 
 ```go
-    strFormatResult = FormatComplex("Current app settings are: ipAddr: {ipaddr}, port: {port}, use ssl: {ssl}.", 
-                                    map[string]interface{}{"ipaddr":"127.0.0.1", "port":5432, "ssl":false})
+strFormatResult = stringFormatter.FormatComplex(
+	"Current app settings are: ipAddr: {ipaddr}, port: {port}, use ssl: {ssl}.", 
+	map[string]any{"ipaddr":"127.0.0.1", "port":5432, "ssl":false},
+)
 ```
 a result will be: `"Current app settings are: ipAddr: 127.0.0.1, port: 5432, use ssl: false."``
 
@@ -66,23 +68,24 @@ benchmark could be running using following commands from command line:
 
 #### 2.1 Map to string utility
 
-Map to string function allow to convert map to string using one of predefined line format:
-* `key => value`
-* `key : value`
-* `value`
+`MapToString` function allows to convert map with primitive key to string using format, including key and value, e.g.:
+* `{key} => {value}`
+* `{key} : {value}`
+* `{value}`
 
-For example see code from test (`text_utils_test.go`):
+For example:
 ```go
-options := map[string]interface{}{
-		"connectTimeout": 1000,
-		"useSsl":         true,
-		"login":          "sa",
-		"password":       "sa",
-	}
+options := map[string]any{
+	"connectTimeout": 1000,
+	"useSsl":         true,
+	"login":          "sa",
+	"password":       "sa",
+}
 
-	str := MapToString(&options, KeyValueWithSemicolonSepFormat, ", ")
-	assert.True(t, len(str) > 0)
-	assert.Equal(t, "connectTimeout : 1000, useSsl : true, login : sa, password : sa", str)
+str := stringFormatter.MapToString(&options, "{key} : {value}", ", ")
+// NOTE: order of key-value pairs is not guranteed though
+// str will be something like:
+"connectTimeout : 1000, useSsl : true, login : sa, password : sa"
 ```
 
 #### 2.2 Benchmarks of the MapToStr function
