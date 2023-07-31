@@ -11,7 +11,7 @@ import (
 
 const _address = "grpcs://127.0.0.1"
 
-type Example struct {
+type meteoData struct {
 	Int    int
 	Str    string
 	Double float64
@@ -104,7 +104,7 @@ func TestFormat(t *testing.T) {
 		"struct arg": {
 			template: "Example is: {0}",
 			args: []any{
-				Example{
+				meteoData{
 					Int:    123,
 					Str:    "This is a test str, nothing more special",
 					Double: -1.098743,
