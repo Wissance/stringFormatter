@@ -120,6 +120,25 @@ func TestFormat(t *testing.T) {
 	}
 }
 
+func TestFormatWithArgFormatting(t *testing.T) {
+	for name, test := range map[string]struct {
+		template string
+		args     []any
+		expected string
+	}{
+		"": {
+			template: "This is the text with an only number formatting: decimal - {0} / {0 : D6}, scientific - {1} / {1 : e2}",
+			args:     []any{123, 191.0784},
+			expected: "This is the text with an only number formatting: decimal - 123 / 000123, scientific - 1.91",
+		},
+	} {
+		// Run test here
+		t.Run(name, func(t *testing.T) {
+			assert.Equal(t, test.expected, stringFormatter.Format(test.template, test.args...))
+		})
+	}
+}
+
 // TestStrFormatWithComplicatedText - this test represents issue with complicated text
 func TestFormatComplex(t *testing.T) {
 	for name, test := range map[string]struct {

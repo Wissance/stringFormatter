@@ -43,8 +43,8 @@ func Format(template string, args ...any) string {
 			if i == templateLen-1 {
 				break
 			}
-
-			if template[i+1] == '{' { // todo: umv: this not considering {{0}}
+			// considering in 2 phases - {{ }}
+			if template[i+1] == '{' {
 				formattedStr.WriteByte('{')
 				continue
 			}
@@ -74,12 +74,21 @@ func Format(template string, args ...any) string {
 				i = j + 1
 			} else {
 				argNumberStr := template[i+1 : j]
+				// is here we should support formatting ?
 				var argNumber int
 				var err error
 				if len(argNumberStr) == 1 {
-					// this makes work a little faster than AtoI
+					// this calculation makes work a little faster than AtoI
 					argNumber = int(argNumberStr[0] - '0')
 				} else {
+					// Here we are going to process argument either with additional formatting or not
+					// i.e. 0 for arg without formatting && 0:format for an argument wit formatting
+					formatOptionIndex := strings.Index(argNumberStr, ":")
+					// formatOptionIndex can't be == 0, because 0 is a position of arg number
+					if formatOptionIndex > 0 {
+						// trim formatting string
+						// make formatting option str for further pass to an argument
+					}
 					argNumber, err = strconv.Atoi(argNumberStr)
 				}
 				//argNumber, err := strconv.Atoi(argNumberStr)
