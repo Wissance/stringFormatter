@@ -6,6 +6,8 @@ import (
 	"strings"
 )
 
+const argumentFormatSeparator = ":"
+
 // Format
 /* Func that makes string formatting from template
  * It differs from above function only by generic interface that allow to use only primitive data types:
@@ -77,24 +79,36 @@ func Format(template string, args ...any) string {
 				// is here we should support formatting ?
 				var argNumber int
 				var err error
+				var argFormatOptions string
 				if len(argNumberStr) == 1 {
 					// this calculation makes work a little faster than AtoI
 					argNumber = int(argNumberStr[0] - '0')
 				} else {
+					argNumber = -1
 					// Here we are going to process argument either with additional formatting or not
 					// i.e. 0 for arg without formatting && 0:format for an argument wit formatting
-					formatOptionIndex := strings.Index(argNumberStr, ":")
+					// todo(UMV): we could format json or yaml here ...
+					formatOptionIndex := strings.Index(argNumberStr, argumentFormatSeparator)
 					// formatOptionIndex can't be == 0, because 0 is a position of arg number
 					if formatOptionIndex > 0 {
 						// trim formatting string
+						argParts := strings.Split(argNumberStr, argumentFormatSeparator)
+						argFormatOptions = strings.Trim(argParts[1], " ")
+						argNumber, err = strconv.Atoi(argParts[0])
+						if err == nil {
+							argNumberStr = argParts[0]
+						}
 						// make formatting option str for further pass to an argument
 					}
-					argNumber, err = strconv.Atoi(argNumberStr)
+					//
+					if argNumber < 0 {
+						argNumber, err = strconv.Atoi(argNumberStr)
+					}
 				}
 				//argNumber, err := strconv.Atoi(argNumberStr)
 				if err == nil && len(args) > argNumber {
 					// get number from placeholder
-					strVal := getItemAsStr(&args[argNumber])
+					strVal := getItemAsStr(&args[argNumber], &argFormatOptions)
 					formattedStr.WriteString(strVal)
 				} else {
 					formattedStr.WriteByte('{')
@@ -168,11 +182,22 @@ func FormatComplex(template string, args map[string]any) string {
 				formattedStr.WriteString(template[i+1 : j+1])
 				i = j + 1
 			} else {
+				var argFormatOptions string
 				argNumberStr := template[i+1 : j]
+				// i.e. 0 for arg without formatting && 0:format for an argument wit formatting
+				formatOptionIndex := strings.Index(argNumberStr, argumentFormatSeparator)
+				// formatOptionIndex can't be == 0, because 0 is a position of arg number
+				if formatOptionIndex > 0 {
+					// trim formatting string
+					argParts := strings.Split(argNumberStr, argumentFormatSeparator)
+					argFormatOptions = strings.Trim(argParts[1], " ")
+					argNumberStr = argParts[0]
+					// make formatting option str for further pass to an argument
+				}
 				arg, ok := args[argNumberStr]
 				if ok {
 					// get number from placeholder
-					strVal := getItemAsStr(&arg)
+					strVal := getItemAsStr(&arg, &argFormatOptions)
 					formattedStr.WriteString(strVal)
 				} else {
 					formattedStr.WriteByte('{')
@@ -191,7 +216,7 @@ func FormatComplex(template string, args map[string]any) string {
 }
 
 // todo: umv: impl format passing as param
-func getItemAsStr(item *any) string {
+func getItemAsStr(item *any, itemFormat *string) string {
 	switch v := (*item).(type) {
 	case string:
 		return v
@@ -225,3 +250,8 @@ func getItemAsStr(item *any) string {
 		return fmt.Sprintf("%v", v)
 	}
 }
+
+/*func formatNumeric(item *any, itemFormat *string) string {
+	// 1. Determine what type of formatting is required
+	return ""
+}*/
