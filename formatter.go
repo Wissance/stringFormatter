@@ -240,6 +240,8 @@ func getItemAsStr(item *any, itemFormat *string) string {
 		 * Following formats are not supported yet:
 		 *   1. c(C) currency it requires also country code
 		 *   2. g(G),and others with locales
+		 * OUR own addition:
+		 * 1. O(o) - octahedral number format
 		 */
 		preparedArgFormat = strings.ToLower(*itemFormat)
 		postProcessingRequired = len(preparedArgFormat) > 1
@@ -248,7 +250,7 @@ func getItemAsStr(item *any, itemFormat *string) string {
 		case 'd':
 			base = 10
 			intNumberFormat = true
-		case 'h':
+		case 'x':
 			base = 16
 			intNumberFormat = true
 		case 'o':
