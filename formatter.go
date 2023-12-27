@@ -235,11 +235,12 @@ func getItemAsStr(item *any, itemFormat *string) string {
 		 * d(D) - decimal
 		 * b(B) - binary
 		 * e(E) - exponential
-		 * f(F) - fixed point, {0,F4}, 123.15 -> 123.1500
+		 * x(X) - hexadecimal i.e. {0:X} 250 -> fa, {0:X4} 250 - 00fa
 		 * p(P) - percent i.e. {0:P100}, 12 -> 12%
 		 * Following formats are not supported yet:
 		 *   1. c(C) currency it requires also country code
 		 *   2. g(G),and others with locales
+		 *   3. f(F) - fixed point, {0,F4}, 123.15 -> 123.1500
 		 * OUR own addition:
 		 * 1. O(o) - octahedral number format
 		 */
@@ -260,7 +261,6 @@ func getItemAsStr(item *any, itemFormat *string) string {
 			base = 2
 			intNumberFormat = true
 		case 'e':
-			// todo(define) precision ...
 			floatFormat = 'e'
 			// precision was passed, take [1:end], extract precision
 			if postProcessingRequired {
@@ -271,6 +271,8 @@ func getItemAsStr(item *any, itemFormat *string) string {
 				}
 			}
 			postProcessingRequired = false
+		case 'p':
+			// percentage processes here ...
 		default:
 			base = 10
 		}
