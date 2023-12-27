@@ -129,11 +129,12 @@ func TestFormatWithArgFormatting(t *testing.T) {
 		"": {
 			template: "This is the text with an only number formatting: decimal - {0} / {0 : D6}, scientific - {1} / {1 : e2}",
 			args:     []any{123, 191.0784},
-			expected: "This is the text with an only number formatting: decimal - 123 / 000123, scientific - 1.91",
+			expected: "This is the text with an only number formatting: decimal - 123 / 000123, scientific - 191.0784 / 1.91e+02",
 		},
 	} {
 		// Run test here
 		t.Run(name, func(t *testing.T) {
+			// assert.NotNil(t, test)
 			assert.Equal(t, test.expected, stringFormatter.Format(test.template, test.args...))
 		})
 	}

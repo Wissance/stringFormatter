@@ -38,6 +38,7 @@ func Format(template string, args ...any) string {
 	formattedStr.Grow(templateLen + 22*len(args))
 	j := -1 //nolint:ineffassign
 
+	nestedBrackets := false
 	formattedStr.WriteString(template[:start])
 	for i := start; i < templateLen; i++ {
 		if template[i] == '{' {
@@ -59,6 +60,7 @@ func Format(template string, args ...any) string {
 
 				if template[j] == '{' {
 					// multiple nested curly brackets ...
+					nestedBrackets = true
 					formattedStr.WriteString(template[i:j])
 					i = j
 				}
@@ -94,7 +96,7 @@ func Format(template string, args ...any) string {
 						// trim formatting string
 						argParts := strings.Split(argNumberStr, argumentFormatSeparator)
 						argFormatOptions = strings.Trim(argParts[1], " ")
-						argNumber, err = strconv.Atoi(argParts[0])
+						argNumber, err = strconv.Atoi(strings.Trim(argParts[0], " "))
 						if err == nil {
 							argNumberStr = argParts[0]
 						}
@@ -105,8 +107,9 @@ func Format(template string, args ...any) string {
 						argNumber, err = strconv.Atoi(argNumberStr)
 					}
 				}
-				//argNumber, err := strconv.Atoi(argNumberStr)
-				if err == nil && len(args) > argNumber {
+				//_, err2 := strconv.Atoi(argNumberStr)
+				if (err == nil || (argFormatOptions != "" && !nestedBrackets)) &&
+					len(args) > argNumber {
 					// get number from placeholder
 					strVal := getItemAsStr(&args[argNumber], &argFormatOptions)
 					formattedStr.WriteString(strVal)
@@ -147,6 +150,7 @@ func FormatComplex(template string, args map[string]any) string {
 	formattedStr := &strings.Builder{}
 	formattedStr.Grow(templateLen + 22*len(args))
 	j := -1 //nolint:ineffassign
+	//nestedBrackets := false
 	formattedStr.WriteString(template[:start])
 	for i := start; i < templateLen; i++ {
 		if template[i] == '{' {
@@ -168,6 +172,7 @@ func FormatComplex(template string, args map[string]any) string {
 				}
 				if template[j] == '{' {
 					// multiple nested curly brackets ...
+					//nestedBrackets = true
 					formattedStr.WriteString(template[i:j])
 					i = j
 				}
@@ -217,41 +222,113 @@ func FormatComplex(template string, args map[string]any) string {
 
 // todo: umv: impl format passing as param
 func getItemAsStr(item *any, itemFormat *string) string {
+	base := 10
+	var floatFormat byte = 'f'
+	precision := -1
+	var preparedArgFormat string
+	var argStr string
+	postProcessingRequired := false
+	intNumberFormat := false
+
+	if itemFormat != nil && len(*itemFormat) > 0 {
+		/* for numbers there are following formats:
+		 * d(D) - decimal
+		 * b(B) - binary
+		 * e(E) - exponential
+		 * f(F) - fixed point, {0,F4}, 123.15 -> 123.1500
+		 * p(P) - percent i.e. {0:P100}, 12 -> 12%
+		 * Following formats are not supported yet:
+		 *   1. c(C) currency it requires also country code
+		 *   2. g(G),and others with locales
+		 */
+		preparedArgFormat = strings.ToLower(*itemFormat)
+		postProcessingRequired = len(preparedArgFormat) > 1
+
+		switch rune(preparedArgFormat[0]) {
+		case 'd':
+			base = 10
+			intNumberFormat = true
+		case 'h':
+			base = 16
+			intNumberFormat = true
+		case 'o':
+			base = 8
+			intNumberFormat = true
+		case 'b':
+			base = 2
+			intNumberFormat = true
+		case 'e':
+			// todo(define) precision ...
+			floatFormat = 'e'
+			// precision was passed, take [1:end], extract precision
+			if postProcessingRequired {
+				precisionStr := preparedArgFormat[1:]
+				precisionVal, err := strconv.Atoi(precisionStr)
+				if err == nil {
+					precision = precisionVal
+				}
+			}
+			postProcessingRequired = false
+		default:
+			base = 10
+		}
+	}
+
 	switch v := (*item).(type) {
 	case string:
-		return v
+		argStr = v
 	case int8:
-		return strconv.FormatInt(int64(v), 10)
+		argStr = strconv.FormatInt(int64(v), base)
 	case int16:
-		return strconv.FormatInt(int64(v), 10)
+		argStr = strconv.FormatInt(int64(v), base)
 	case int32:
-		return strconv.FormatInt(int64(v), 10)
+		argStr = strconv.FormatInt(int64(v), base)
 	case int64:
-		return strconv.FormatInt(v, 10)
+		argStr = strconv.FormatInt(v, base)
 	case int:
-		return strconv.FormatInt(int64(v), 10)
+		argStr = strconv.FormatInt(int64(v), base)
 	case uint8:
-		return strconv.FormatUint(uint64(v), 10)
+		argStr = strconv.FormatUint(uint64(v), base)
 	case uint16:
-		return strconv.FormatUint(uint64(v), 10)
+		argStr = strconv.FormatUint(uint64(v), base)
 	case uint32:
-		return strconv.FormatUint(uint64(v), 10)
+		argStr = strconv.FormatUint(uint64(v), base)
 	case uint64:
-		return strconv.FormatUint(v, 10)
+		argStr = strconv.FormatUint(v, base)
 	case uint:
-		return strconv.FormatUint(uint64(v), 10)
+		argStr = strconv.FormatUint(uint64(v), base)
 	case bool:
-		return strconv.FormatBool(v)
+		argStr = strconv.FormatBool(v)
 	case float32:
-		return strconv.FormatFloat(float64(v), 'f', -1, 32)
+		argStr = strconv.FormatFloat(float64(v), floatFormat, precision, 32)
 	case float64:
-		return strconv.FormatFloat(v, 'f', -1, 64)
+		argStr = strconv.FormatFloat(v, floatFormat, precision, 64)
 	default:
-		return fmt.Sprintf("%v", v)
+		argStr = fmt.Sprintf("%v", v)
 	}
-}
 
-/*func formatNumeric(item *any, itemFormat *string) string {
-	// 1. Determine what type of formatting is required
-	return ""
-}*/
+	if !postProcessingRequired {
+		return argStr
+	}
+
+	// 1. If integer numbers add filling
+	if intNumberFormat {
+		symbolsStr := preparedArgFormat[1:]
+		symbolsStrVal, err := strconv.Atoi(symbolsStr)
+		if err == nil {
+			symbolsToAdd := symbolsStrVal - len(argStr)
+			if symbolsToAdd > 0 {
+				advArgStr := &strings.Builder{}
+				advArgStr.Grow(len(argStr) + symbolsToAdd)
+
+				for i := 0; i < symbolsToAdd; i++ {
+					advArgStr.WriteByte('0')
+				}
+				advArgStr.WriteString(argStr)
+				return advArgStr.String()
+			}
+		}
+	}
+
+	return argStr
+}
