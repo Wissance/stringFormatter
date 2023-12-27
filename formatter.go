@@ -150,7 +150,7 @@ func FormatComplex(template string, args map[string]any) string {
 	formattedStr := &strings.Builder{}
 	formattedStr.Grow(templateLen + 22*len(args))
 	j := -1 //nolint:ineffassign
-	//nestedBrackets := false
+	nestedBrackets := false
 	formattedStr.WriteString(template[:start])
 	for i := start; i < templateLen; i++ {
 		if template[i] == '{' {
@@ -172,7 +172,7 @@ func FormatComplex(template string, args map[string]any) string {
 				}
 				if template[j] == '{' {
 					// multiple nested curly brackets ...
-					//nestedBrackets = true
+					nestedBrackets = true
 					formattedStr.WriteString(template[i:j])
 					i = j
 				}
@@ -196,11 +196,11 @@ func FormatComplex(template string, args map[string]any) string {
 					// trim formatting string
 					argParts := strings.Split(argNumberStr, argumentFormatSeparator)
 					argFormatOptions = strings.Trim(argParts[1], " ")
-					argNumberStr = argParts[0]
+					argNumberStr = strings.Trim(argParts[0], " ")
 					// make formatting option str for further pass to an argument
 				}
 				arg, ok := args[argNumberStr]
-				if ok {
+				if ok || (argFormatOptions != "" && !nestedBrackets) {
 					// get number from placeholder
 					strVal := getItemAsStr(&arg, &argFormatOptions)
 					formattedStr.WriteString(strVal)
