@@ -360,8 +360,18 @@ func getItemAsStr(item *any, itemFormat *string) string {
 		}
 	}
 
-	if floatNumberFormat {
-		// implement ...
+	if floatNumberFormat && precision > 0 {
+		pointIndex := strings.Index(argStr, ".")
+		if pointIndex > 0 {
+			advArgStr := &strings.Builder{}
+			advArgStr.Grow(len(argStr) + precision)
+			advArgStr.WriteString(argStr)
+			numberOfSymbolsAfterPoint := len(argStr) - (pointIndex + 1)
+			for i := numberOfSymbolsAfterPoint; i < precision; i++ {
+				advArgStr.WriteByte(0)
+			}
+			return advArgStr.String()
+		}
 	}
 
 	return argStr

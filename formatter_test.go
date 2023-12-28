@@ -137,9 +137,9 @@ func TestFormatWithArgFormatting(t *testing.T) {
 			expected: "This is the text with an only number formatting: binary - 1111 / 00001111, hexadecimal - fa / 00fa",
 		},
 		"numeric_test_3": {
-			template: "This is the text with an only number formatting: decimal - {0:F} / {0 : F4}",
+			template: "This is the text with an only number formatting: decimal - {0:F} / {0 : F4} / {0:F8}",
 			args:     []any{10.5467890},
-			expected: "This is the text with an only number formatting: decimal - 10.546789 / 10.5468",
+			expected: "This is the text with an only number formatting: decimal - 10.546789 / 10.5468 / 10.54678900",
 		},
 		"numeric_test_4": {
 			template: "This is the text with percentage format - {0:P100} / {0 : P100.5}, and non normal percentage {1:P100}",
