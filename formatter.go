@@ -278,6 +278,27 @@ func getItemAsStr(item *any, itemFormat *string) string {
 
 		case 'p':
 			// percentage processes here ...
+			if postProcessingRequired {
+				dividerStr := preparedArgFormat[1:]
+				dividerVal, err := strconv.ParseFloat(dividerStr, 32)
+				if err == nil {
+					// 1. Convert arg to float
+					val := (*item).(interface{})
+					var floatVal float64
+					switch val.(type) {
+					case float64:
+						floatVal = val.(float64)
+					case int:
+						floatVal = float64(val.(int))
+					default:
+						floatVal = 0
+					}
+					// 2. Divide arg / divider and multiply by 100
+					percentage := (floatVal / dividerVal) * 100
+					return strconv.FormatFloat(percentage, floatFormat, 2, 64)
+				}
+			}
+
 		default:
 			base = 10
 		}

@@ -141,6 +141,11 @@ func TestFormatWithArgFormatting(t *testing.T) {
 			args:     []any{10.5467890},
 			expected: "This is the text with an only number formatting: decimal - 10.546789 / 10.5468",
 		},
+		"numeric_test_4": {
+			template: "This is the text with percentage format - {0:P100} / {0 : P100.5}, and non normal percentage {1:P100}",
+			args:     []any{12, "ass"},
+			expected: "This is the text with percentage format - 12.00 / 11.94, and non normal percentage 0.00",
+		},
 	} {
 		// Run test here
 		t.Run(name, func(t *testing.T) {
