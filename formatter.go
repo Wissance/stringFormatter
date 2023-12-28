@@ -228,7 +228,7 @@ func getItemAsStr(item *any, itemFormat *string) string {
 	var argStr string
 	postProcessingRequired := false
 	intNumberFormat := false
-	// floatNumberFormat := false
+	floatNumberFormat := false
 
 	if itemFormat != nil && len(*itemFormat) > 0 {
 		/* for numbers there are following formats:
@@ -261,8 +261,10 @@ func getItemAsStr(item *any, itemFormat *string) string {
 		case 'b':
 			base = 2
 			intNumberFormat = true
-		case 'e':
-			floatFormat = 'e'
+		case 'e', 'f':
+			if rune(preparedArgFormat[0]) == 'e' {
+				floatFormat = 'e'
+			}
 			// precision was passed, take [1:end], extract precision
 			if postProcessingRequired {
 				precisionStr := preparedArgFormat[1:]
@@ -272,16 +274,8 @@ func getItemAsStr(item *any, itemFormat *string) string {
 				}
 			}
 			postProcessingRequired = false
-		case 'f':
-			if postProcessingRequired {
-				precisionStr := preparedArgFormat[1:]
-				precisionVal, err := strconv.Atoi(precisionStr)
-				if err == nil {
-					precision = precisionVal
-				}
-			}
-			postProcessingRequired = false
-			//floatNumberFormat = true
+			floatNumberFormat = preparedArgFormat[0] == 'f'
+
 		case 'p':
 			// percentage processes here ...
 		default:
@@ -343,6 +337,10 @@ func getItemAsStr(item *any, itemFormat *string) string {
 				return advArgStr.String()
 			}
 		}
+	}
+
+	if floatNumberFormat {
+		// implement ...
 	}
 
 	return argStr
