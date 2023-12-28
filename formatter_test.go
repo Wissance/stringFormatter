@@ -136,6 +136,11 @@ func TestFormatWithArgFormatting(t *testing.T) {
 			args:     []any{15, 250},
 			expected: "This is the text with an only number formatting: binary - 1111 / 00001111, hexadecimal - fa / 00fa",
 		},
+		"numeric_test_3": {
+			template: "This is the text with an only number formatting: decimal - {0:F} / {0 : F4}",
+			args:     []any{10.5467890},
+			expected: "This is the text with an only number formatting: decimal - 10.546789 / 10.5468",
+		},
 	} {
 		// Run test here
 		t.Run(name, func(t *testing.T) {

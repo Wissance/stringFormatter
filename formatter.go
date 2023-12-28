@@ -220,7 +220,6 @@ func FormatComplex(template string, args map[string]any) string {
 	return formattedStr.String()
 }
 
-// todo: umv: impl format passing as param
 func getItemAsStr(item *any, itemFormat *string) string {
 	base := 10
 	var floatFormat byte = 'f'
@@ -229,13 +228,15 @@ func getItemAsStr(item *any, itemFormat *string) string {
 	var argStr string
 	postProcessingRequired := false
 	intNumberFormat := false
+	// floatNumberFormat := false
 
 	if itemFormat != nil && len(*itemFormat) > 0 {
 		/* for numbers there are following formats:
 		 * d(D) - decimal
 		 * b(B) - binary
-		 * e(E) - exponential
-		 * x(X) - hexadecimal i.e. {0:X} 250 -> fa, {0:X4} 250 - 00fa
+		 * f(F) - fixed point i.e {0:F}, 10.5467890 -> 10.546789 ; {0:F4}, 10.5467890 -> 10.5468
+		 * e(E) - exponential - float point with scientific format {0:E2}, 191.0784 -> 1.91e+02
+		 * x(X) - hexadecimal i.e. {0:X}, 250 -> fa ; {0:X4}, 250 -> 00fa
 		 * p(P) - percent i.e. {0:P100}, 12 -> 12%
 		 * Following formats are not supported yet:
 		 *   1. c(C) currency it requires also country code
@@ -271,6 +272,16 @@ func getItemAsStr(item *any, itemFormat *string) string {
 				}
 			}
 			postProcessingRequired = false
+		case 'f':
+			if postProcessingRequired {
+				precisionStr := preparedArgFormat[1:]
+				precisionVal, err := strconv.Atoi(precisionStr)
+				if err == nil {
+					precision = precisionVal
+				}
+			}
+			postProcessingRequired = false
+			//floatNumberFormat = true
 		case 'p':
 			// percentage processes here ...
 		default:
