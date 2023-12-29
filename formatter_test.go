@@ -162,7 +162,7 @@ func TestFormatComplex(t *testing.T) {
 		args     map[string]any
 		expected string
 	}{
-		"format json": {
+		"numeric_test_1": {
 			template: `
 			{
 				"Comment": "Call Lambda with GRPC",
@@ -191,6 +191,24 @@ func TestFormatComplex(t *testing.T) {
 			template: "Current app settings are: ipAddr: {ipaddr}, port: {port}, use ssl: {ssl}.",
 			args:     map[string]any{"ipaddr": "127.0.0.1", "port": 5432, "ssl": false},
 			expected: "Current app settings are: ipAddr: 127.0.0.1, port: 5432, use ssl: false.",
+		},
+	} {
+		t.Run(name, func(t *testing.T) {
+			assert.Equal(t, test.expected, stringFormatter.FormatComplex(test.template, test.args))
+		})
+	}
+}
+
+func TestFormatComplexWithArgFormatting(t *testing.T) {
+	for name, test := range map[string]struct {
+		template string
+		args     map[string]any
+		expected string
+	}{
+		"numeric_test_1": {
+			template: "This is the text with an only number formatting: scientific - {mass} / {mass : e2}",
+			args:     map[string]any{"mass": 191.0784},
+			expected: "This is the text with an only number formatting: scientific - 191.0784 / 1.91e+02",
 		},
 	} {
 		t.Run(name, func(t *testing.T) {

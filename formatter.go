@@ -189,15 +189,10 @@ func FormatComplex(template string, args map[string]any) string {
 			} else {
 				var argFormatOptions string
 				argNumberStr := template[i+1 : j]
-				// i.e. 0 for arg without formatting && 0:format for an argument wit formatting
-				formatOptionIndex := strings.Index(argNumberStr, argumentFormatSeparator)
-				// formatOptionIndex can't be == 0, because 0 is a position of arg number
-				if formatOptionIndex > 0 {
-					// trim formatting string
-					argParts := strings.Split(argNumberStr, argumentFormatSeparator)
+				argParts := strings.Split(argNumberStr, argumentFormatSeparator)
+				if len(argParts) > 1 {
 					argFormatOptions = strings.Trim(argParts[1], " ")
 					argNumberStr = strings.Trim(argParts[0], " ")
-					// make formatting option str for further pass to an argument
 				}
 				arg, ok := args[argNumberStr]
 				if ok || (argFormatOptions != "" && !nestedBrackets) {
