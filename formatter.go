@@ -189,12 +189,15 @@ func FormatComplex(template string, args map[string]any) string {
 			} else {
 				var argFormatOptions string
 				argNumberStr := template[i+1 : j]
-				argParts := strings.Split(argNumberStr, argumentFormatSeparator)
-				if len(argParts) > 1 {
-					argFormatOptions = strings.Trim(argParts[1], " ")
-					argNumberStr = strings.Trim(argParts[0], " ")
-				}
 				arg, ok := args[argNumberStr]
+				if !ok {
+					argParts := strings.Split(argNumberStr, argumentFormatSeparator)
+					if len(argParts) > 1 {
+						argFormatOptions = strings.Trim(argParts[1], " ")
+						argNumberStr = strings.Trim(argParts[0], " ")
+					}
+					arg, ok = args[argNumberStr]
+				}
 				if ok || (argFormatOptions != "" && !nestedBrackets) {
 					// get number from placeholder
 					strVal := getItemAsStr(&arg, &argFormatOptions)
