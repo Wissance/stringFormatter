@@ -215,6 +215,11 @@ func TestFormatComplexWithArgFormatting(t *testing.T) {
 			args:     map[string]any{"bin": 15, "hex": 250},
 			expected: "This is the text with an only number formatting: binary - 1111 / 00001111, hexadecimal - fa / 00fa",
 		},
+		"numeric_test_3": {
+			template: "This is the text with an only number formatting: decimal - {float:F} / {float : F4} / {float:F8}",
+			args:     map[string]any{"float": 10.5467890},
+			expected: "This is the text with an only number formatting: decimal - 10.546789 / 10.5468 / 10.54678900",
+		},
 	} {
 		t.Run(name, func(t *testing.T) {
 			assert.Equal(t, test.expected, stringFormatter.FormatComplex(test.template, test.args))
