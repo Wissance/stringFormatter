@@ -243,24 +243,24 @@ func getItemAsStr(item *any, itemFormat *string) string {
 		 * OUR own addition:
 		 * 1. O(o) - octahedral number format
 		 */
-		preparedArgFormat = strings.ToLower(*itemFormat)
+		preparedArgFormat = *itemFormat
 		postProcessingRequired = len(preparedArgFormat) > 1
 
-		switch rune(preparedArgFormat[0]) {
-		case 'd':
+		switch rune((*itemFormat)[0]) {
+		case 'd', 'D':
 			base = 10
 			intNumberFormat = true
-		case 'x':
+		case 'x', 'X':
 			base = 16
 			intNumberFormat = true
-		case 'o':
+		case 'o', 'O':
 			base = 8
 			intNumberFormat = true
-		case 'b':
+		case 'b', 'B':
 			base = 2
 			intNumberFormat = true
-		case 'e', 'f':
-			if rune(preparedArgFormat[0]) == 'e' {
+		case 'e', 'E', 'f', 'F':
+			if rune(preparedArgFormat[0]) == 'e' || rune(preparedArgFormat[0]) == 'E' {
 				floatFormat = 'e'
 			}
 			// precision was passed, take [1:end], extract precision
@@ -274,7 +274,7 @@ func getItemAsStr(item *any, itemFormat *string) string {
 			postProcessingRequired = false
 			floatNumberFormat = preparedArgFormat[0] == 'f'
 
-		case 'p':
+		case 'p', 'P':
 			// percentage processes here ...
 			if postProcessingRequired {
 				dividerStr := preparedArgFormat[1:]
@@ -346,8 +346,8 @@ func getItemAsStr(item *any, itemFormat *string) string {
 		if err == nil {
 			symbolsToAdd := symbolsStrVal - len(argStr)
 			if symbolsToAdd > 0 {
-				advArgStr := &strings.Builder{}
-				advArgStr.Grow(len(argStr) + symbolsToAdd)
+				advArgStr := strings.Builder{}
+				advArgStr.Grow(len(argStr) + symbolsToAdd + 1)
 
 				for i := 0; i < symbolsToAdd; i++ {
 					advArgStr.WriteByte('0')
@@ -361,8 +361,8 @@ func getItemAsStr(item *any, itemFormat *string) string {
 	if floatNumberFormat && precision > 0 {
 		pointIndex := strings.Index(argStr, ".")
 		if pointIndex > 0 {
-			advArgStr := &strings.Builder{}
-			advArgStr.Grow(len(argStr) + precision)
+			advArgStr := strings.Builder{}
+			advArgStr.Grow(len(argStr) + precision + 1)
 			advArgStr.WriteString(argStr)
 			numberOfSymbolsAfterPoint := len(argStr) - (pointIndex + 1)
 			for i := numberOfSymbolsAfterPoint; i < precision; i++ {
