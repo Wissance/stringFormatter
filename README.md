@@ -66,9 +66,17 @@ For more convenient lines formatting we should choose how arguments are represen
    - `{0:B}, 15 outputs -> 1111`
    - `{0:B8}, 15 outputs -> 00001111`
 2. Hex number formatting
+   - `{0:X}, 250 outputs -> fa`
+   - `{0:X4}, 250 outputs -> 00fa`
 3. Oct number formatting
+   - `{0:o}, 11 outputs -> 14`
 4. Float point number formatting
+   - `{0:E2}, 191.0478 outputs -> 1.91e+02`
+   - `{0:F}, 10.4567890 outputs -> 10.456789`
+   - `{0:F4}, 10.4567890 outputs -> 10.4568`
+   - `{0:F8}, 10.4567890 outputs -> 10.45678900`
 5. Percentage output
+   - `{0:P100}, 12 outputs -> 12%`
 
 ##### 1.2.4 Benchmarks of the Format and FormatComplex functions
 
