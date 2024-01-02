@@ -93,12 +93,12 @@ func Format(template string, args ...any) string {
 					formatOptionIndex := strings.Index(argNumberStr, argumentFormatSeparator)
 					// formatOptionIndex can't be == 0, because 0 is a position of arg number
 					if formatOptionIndex > 0 {
-						// trim formatting string
-						argParts := strings.Split(argNumberStr, argumentFormatSeparator)
-						argFormatOptions = strings.Trim(argParts[1], " ")
-						argNumber, err = strconv.Atoi(strings.Trim(argParts[0], " "))
+						// trim formatting string to remove spaces
+						argFormatOptions = strings.Trim(argNumberStr[formatOptionIndex+1:], " ")
+						argNumberStrPart := argNumberStr[:formatOptionIndex]
+						argNumber, err = strconv.Atoi(strings.Trim(argNumberStrPart, " "))
 						if err == nil {
-							argNumberStr = argParts[0]
+							argNumberStr = argNumberStrPart
 						}
 						// make formatting option str for further pass to an argument
 					}
@@ -107,7 +107,7 @@ func Format(template string, args ...any) string {
 						argNumber, err = strconv.Atoi(argNumberStr)
 					}
 				}
-				//_, err2 := strconv.Atoi(argNumberStr)
+
 				if (err == nil || (argFormatOptions != "" && !nestedBrackets)) &&
 					len(args) > argNumber {
 					// get number from placeholder
@@ -272,7 +272,7 @@ func getItemAsStr(item *any, itemFormat *string) string {
 				}
 			}
 			postProcessingRequired = false
-			floatNumberFormat = preparedArgFormat[0] == 'f'
+			floatNumberFormat = floatFormat == 'f'
 
 		case 'p', 'P':
 			// percentage processes here ...
