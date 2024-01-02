@@ -191,11 +191,12 @@ func FormatComplex(template string, args map[string]any) string {
 				argNumberStr := template[i+1 : j]
 				arg, ok := args[argNumberStr]
 				if !ok {
-					argParts := strings.Split(argNumberStr, argumentFormatSeparator)
-					if len(argParts) > 1 {
-						argFormatOptions = strings.Trim(argParts[1], " ")
-						argNumberStr = strings.Trim(argParts[0], " ")
+					formatOptionIndex := strings.Index(argNumberStr, argumentFormatSeparator)
+					if formatOptionIndex >= 0 {
+						argFormatOptions = strings.Trim(argNumberStr[formatOptionIndex+1:], " ")
+						argNumberStr = strings.Trim(argNumberStr[:formatOptionIndex], " ")
 					}
+
 					arg, ok = args[argNumberStr]
 				}
 				if ok || (argFormatOptions != "" && !nestedBrackets) {
