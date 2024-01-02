@@ -14,7 +14,7 @@ faster than `fmt`!!!.
 ## 1. Features
 
 1. Text formatting with template using traditional for `C#, Python programmers style` - `{0}`, `{name}` that faster then fmt does:
-![String Formatter: a convenient string formatting tool](/img/benchmarks2.png)
+![String Formatter: a convenient string formatting tool](/img/benchmarks_adv.png)
 2. Additional text utilities:
    - convert ***map to string*** using one of predefined formats (see `text_utils.go`)
 
@@ -58,7 +58,19 @@ strFormatResult = stringFormatter.FormatComplex(
 ```
 a result will be: `"Current app settings are: ipAddr: 127.0.0.1, port: 5432, use ssl: false."``
 
-#### 1.2.3 Benchmarks of the Format and FormatComplex functions
+##### 1.2.3 Advanced arguments formatting
+
+For more convenient lines formatting we should choose how arguments are representing in output text, 
+`stringFormatter` supports following format options:
+1. Bin number formatting 
+   - `{0:B}, 15 outputs -> 1111`
+   - `{0:B8}, 15 outputs -> 00001111`
+2. Hex number formatting
+3. Oct number formatting
+4. Float point number formatting
+5. Percentage output
+
+##### 1.2.4 Benchmarks of the Format and FormatComplex functions
 
 benchmark could be running using following commands from command line:
 * to see `Format` result - `go test -bench=Format -benchmem -cpu 1`
