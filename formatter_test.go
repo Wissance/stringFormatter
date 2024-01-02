@@ -120,6 +120,41 @@ func TestFormat(t *testing.T) {
 	}
 }
 
+func TestFormatWithArgFormatting(t *testing.T) {
+	for name, test := range map[string]struct {
+		template string
+		args     []any
+		expected string
+	}{
+		"numeric_test_1": {
+			template: "This is the text with an only number formatting: decimal - {0} / {0 : D6}, scientific - {1} / {1 : e2}",
+			args:     []any{123, 191.0784},
+			expected: "This is the text with an only number formatting: decimal - 123 / 000123, scientific - 191.0784 / 1.91e+02",
+		},
+		"numeric_test_2": {
+			template: "This is the text with an only number formatting: binary - {0:B} / {0 : B8}, hexadecimal - {1:X} / {1 : X4}",
+			args:     []any{15, 250},
+			expected: "This is the text with an only number formatting: binary - 1111 / 00001111, hexadecimal - fa / 00fa",
+		},
+		"numeric_test_3": {
+			template: "This is the text with an only number formatting: decimal - {0:F} / {0 : F4} / {0:F8}",
+			args:     []any{10.5467890},
+			expected: "This is the text with an only number formatting: decimal - 10.546789 / 10.5468 / 10.54678900",
+		},
+		"numeric_test_4": {
+			template: "This is the text with percentage format - {0:P100} / {0 : P100.5}, and non normal percentage {1:P100}",
+			args:     []any{12, "ass"},
+			expected: "This is the text with percentage format - 12.00 / 11.94, and non normal percentage 0.00",
+		},
+	} {
+		// Run test here
+		t.Run(name, func(t *testing.T) {
+			// assert.NotNil(t, test)
+			assert.Equal(t, test.expected, stringFormatter.Format(test.template, test.args...))
+		})
+	}
+}
+
 // TestStrFormatWithComplicatedText - this test represents issue with complicated text
 func TestFormatComplex(t *testing.T) {
 	for name, test := range map[string]struct {
@@ -127,7 +162,7 @@ func TestFormatComplex(t *testing.T) {
 		args     map[string]any
 		expected string
 	}{
-		"format json": {
+		"numeric_test_1": {
 			template: `
 			{
 				"Comment": "Call Lambda with GRPC",
@@ -156,6 +191,34 @@ func TestFormatComplex(t *testing.T) {
 			template: "Current app settings are: ipAddr: {ipaddr}, port: {port}, use ssl: {ssl}.",
 			args:     map[string]any{"ipaddr": "127.0.0.1", "port": 5432, "ssl": false},
 			expected: "Current app settings are: ipAddr: 127.0.0.1, port: 5432, use ssl: false.",
+		},
+	} {
+		t.Run(name, func(t *testing.T) {
+			assert.Equal(t, test.expected, stringFormatter.FormatComplex(test.template, test.args))
+		})
+	}
+}
+
+func TestFormatComplexWithArgFormatting(t *testing.T) {
+	for name, test := range map[string]struct {
+		template string
+		args     map[string]any
+		expected string
+	}{
+		"numeric_test_1": {
+			template: "This is the text with an only number formatting: scientific - {mass} / {mass : e2}",
+			args:     map[string]any{"mass": 191.0784},
+			expected: "This is the text with an only number formatting: scientific - 191.0784 / 1.91e+02",
+		},
+		"numeric_test_2": {
+			template: "This is the text with an only number formatting: binary - {bin:B} / {bin : B8}, hexadecimal - {hex:X} / {hex : X4}",
+			args:     map[string]any{"bin": 15, "hex": 250},
+			expected: "This is the text with an only number formatting: binary - 1111 / 00001111, hexadecimal - fa / 00fa",
+		},
+		"numeric_test_3": {
+			template: "This is the text with an only number formatting: decimal - {float:F} / {float : F4} / {float:F8}",
+			args:     map[string]any{"float": 10.5467890},
+			expected: "This is the text with an only number formatting: decimal - 10.546789 / 10.5468 / 10.54678900",
 		},
 	} {
 		t.Run(name, func(t *testing.T) {
