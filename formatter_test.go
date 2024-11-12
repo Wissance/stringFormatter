@@ -197,6 +197,11 @@ func TestFormatComplex(t *testing.T) {
 			args:     map[string]any{"ipaddr": "127.0.0.1", "port": 5432, "ssl": false},
 			expected: "Current app settings are: ipAddr: 127.0.0.1, port: 5432, use ssl: false.",
 		},
+		"one json line with open bracket at the end": {
+			template: "    \"server\": {",
+			args:     map[string]any{},
+			expected: "    \"server\": {",
+		},
 	} {
 		t.Run(name, func(t *testing.T) {
 			assert.Equal(t, test.expected, stringFormatter.FormatComplex(test.template, test.args))
