@@ -113,6 +113,11 @@ func TestFormat(t *testing.T) {
 			},
 			expected: "Example is: {123 This is a test str, nothing more special -1.098743 main question error, is 42}",
 		},
+		"open bracket at the end of line of go file": {
+			template: "type serviceHealth struct {",
+			args:     []any{},
+			expected: "type serviceHealth struct {",
+		},
 	} {
 		t.Run(name, func(t *testing.T) {
 			assert.Equal(t, test.expected, stringFormatter.Format(test.template, test.args...))
