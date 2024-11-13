@@ -113,10 +113,21 @@ func TestFormat(t *testing.T) {
 			},
 			expected: "Example is: {123 This is a test str, nothing more special -1.098743 main question error, is 42}",
 		},
-		"open bracket at the end of line of go file": {
+		"open bracket at the end of line of go line": {
 			template: "type serviceHealth struct {",
 			args:     []any{},
 			expected: "type serviceHealth struct {",
+		},
+		"open bracket at the end of line of go line with {} inside": {
+			template: "func afterHandle(respWriter *http.ResponseWriter, statusCode int, data interface{}) {",
+			args:     []any{},
+			expected: "func afterHandle(respWriter *http.ResponseWriter, statusCode int, data interface{}) {",
+		},
+
+		"close bracket at the end of line of go line with {} inside": {
+			template: "func afterHandle(respWriter *http.ResponseWriter, statusCode int, data interface{}) }",
+			args:     []any{},
+			expected: "func afterHandle(respWriter *http.ResponseWriter, statusCode int, data interface{}) }",
 		},
 	} {
 		t.Run(name, func(t *testing.T) {
@@ -201,6 +212,17 @@ func TestFormatComplex(t *testing.T) {
 			template: "    \"server\": {",
 			args:     map[string]any{},
 			expected: "    \"server\": {",
+		},
+		"open bracket at the end of line of go line with {} inside": {
+			template: "func afterHandle(respWriter *http.ResponseWriter, statusCode int, data interface{}) {",
+			args:     map[string]any{},
+			expected: "func afterHandle(respWriter *http.ResponseWriter, statusCode int, data interface{}) {",
+		},
+
+		"close bracket at the end of line of go line with {} inside": {
+			template: "func afterHandle(respWriter *http.ResponseWriter, statusCode int, data interface{}) }",
+			args:     map[string]any{},
+			expected: "func afterHandle(respWriter *http.ResponseWriter, statusCode int, data interface{}) }",
 		},
 	} {
 		t.Run(name, func(t *testing.T) {
