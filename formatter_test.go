@@ -251,11 +251,11 @@ func TestFormatComplex(t *testing.T) {
 			args:     map[string]any{},
 			expected: "func afterHandle(respWriter *http.ResponseWriter, statusCode int, data interface{}) }",
 		},
-		/*"commentaries after bracket": {
+		"commentaries after bracket": {
 			template: "switch app.appConfig.ServerCfg.Schema { //nolint:exhaustive",
 			args:     map[string]any{},
 			expected: "switch app.appConfig.ServerCfg.Schema { //nolint:exhaustive",
-		},*/
+		},
 	} {
 		t.Run(name, func(t *testing.T) {
 			assert.Equal(t, test.expected, stringFormatter.FormatComplex(test.template, test.args))

@@ -7,6 +7,7 @@ import (
 )
 
 const argumentFormatSeparator = ":"
+const bytesPerArgDefault = 20
 
 // Format
 /* Func that makes string formatting from template
@@ -35,7 +36,7 @@ func Format(template string, args ...any) string {
 
 	templateLen := len(template)
 	formattedStr := &strings.Builder{}
-	argsLen := 16 * len(args)
+	argsLen := bytesPerArgDefault * len(args)
 	formattedStr.Grow(templateLen + argsLen + 1)
 	j := -1 //nolint:ineffassign
 
@@ -160,7 +161,8 @@ func FormatComplex(template string, args map[string]any) string {
 
 	templateLen := len(template)
 	formattedStr := &strings.Builder{}
-	formattedStr.Grow(templateLen + 22*len(args))
+	argsLen := bytesPerArgDefault * len(args)
+	formattedStr.Grow(templateLen + argsLen + 1)
 	j := -1 //nolint:ineffassign
 	nestedBrackets := false
 	formattedStr.WriteString(template[:start])
@@ -224,7 +226,15 @@ func FormatComplex(template string, args map[string]any) string {
 				}
 				if ok || (argFormatOptions != "" && !nestedBrackets) {
 					// get number from placeholder
-					strVal := getItemAsStr(&arg, &argFormatOptions)
+					strVal := ""
+					if arg != nil {
+						strVal = getItemAsStr(&arg, &argFormatOptions)
+					} else {
+						formattedStr.WriteString(template[i:j])
+						if j < templateLen-1 {
+							formattedStr.WriteByte(template[j])
+						}
+					}
 					formattedStr.WriteString(strVal)
 				} else {
 					formattedStr.WriteString(template[i:j])
