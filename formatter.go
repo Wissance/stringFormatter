@@ -35,7 +35,8 @@ func Format(template string, args ...any) string {
 
 	templateLen := len(template)
 	formattedStr := &strings.Builder{}
-	formattedStr.Grow(templateLen + 22*len(args))
+	argsLen := 16 * len(args)
+	formattedStr.Grow(templateLen + argsLen + 1)
 	j := -1 //nolint:ineffassign
 
 	nestedBrackets := false
@@ -124,9 +125,10 @@ func Format(template string, args ...any) string {
 					strVal := getItemAsStr(&args[argNumber], &argFormatOptions)
 					formattedStr.WriteString(strVal)
 				} else {
-					formattedStr.WriteByte('{')
-					formattedStr.WriteString(argNumberStr)
-					formattedStr.WriteByte('}')
+					formattedStr.WriteString(template[i:j])
+					if j < templateLen-1 {
+						formattedStr.WriteByte(template[j])
+					}
 				}
 				i = j
 			}
@@ -225,9 +227,10 @@ func FormatComplex(template string, args map[string]any) string {
 					strVal := getItemAsStr(&arg, &argFormatOptions)
 					formattedStr.WriteString(strVal)
 				} else {
-					formattedStr.WriteByte('{')
-					formattedStr.WriteString(argNumberStr)
-					formattedStr.WriteByte('}')
+					formattedStr.WriteString(template[i:j])
+					if j < templateLen-1 {
+						formattedStr.WriteByte(template[j])
+					}
 				}
 				i = j
 			}
