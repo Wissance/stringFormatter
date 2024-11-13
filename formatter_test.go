@@ -129,6 +129,17 @@ func TestFormat(t *testing.T) {
 			args:     []any{},
 			expected: "func afterHandle(respWriter *http.ResponseWriter, statusCode int, data interface{}) }",
 		},
+
+		"no bracket at the end of line with {} inside": {
+			template: "func afterHandle(respWriter *http.ResponseWriter, statusCode int, data interface{}) ",
+			args:     []any{},
+			expected: "func afterHandle(respWriter *http.ResponseWriter, statusCode int, data interface{}) ",
+		},
+		"open bracket at the end of line of go line with multiple {} inside": {
+			template: "func afterHandle(respWriter *http.ResponseWriter, statusCode int, data interface{}, additionalData interface{}) {",
+			args:     []any{},
+			expected: "func afterHandle(respWriter *http.ResponseWriter, statusCode int, data interface{}, additionalData interface{}) {",
+		},
 	} {
 		t.Run(name, func(t *testing.T) {
 			assert.Equal(t, test.expected, stringFormatter.Format(test.template, test.args...))
@@ -217,6 +228,12 @@ func TestFormatComplex(t *testing.T) {
 			template: "func afterHandle(respWriter *http.ResponseWriter, statusCode int, data interface{}) {",
 			args:     map[string]any{},
 			expected: "func afterHandle(respWriter *http.ResponseWriter, statusCode int, data interface{}) {",
+		},
+
+		"open bracket at the end of line of go line with multiple {} inside": {
+			template: "func afterHandle(respWriter *http.ResponseWriter, statusCode int, data interface{}, additionalData interface{}) {",
+			args:     map[string]any{},
+			expected: "func afterHandle(respWriter *http.ResponseWriter, statusCode int, data interface{}, additionalData interface{}) {",
 		},
 
 		"close bracket at the end of line of go line with {} inside": {

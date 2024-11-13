@@ -55,6 +55,13 @@ func Format(template string, args ...any) string {
 				continue
 			}
 			// find end of placeholder
+			// process empty pair - {}
+			if template[i+1] == '}' {
+				i++
+				formattedStr.WriteString("{}")
+				continue
+			}
+			// process non-empty placeholder
 			j = i + 2
 			for {
 				if j >= templateLen {
@@ -117,14 +124,9 @@ func Format(template string, args ...any) string {
 					strVal := getItemAsStr(&args[argNumber], &argFormatOptions)
 					formattedStr.WriteString(strVal)
 				} else {
-					if argNumberStr != "" {
-						formattedStr.WriteByte('{')
-						formattedStr.WriteString(argNumberStr)
-						formattedStr.WriteByte('}')
-					} else {
-						// complicated case when we have brackets in line and open line at the end
-						formattedStr.WriteByte('{')
-					}
+					formattedStr.WriteByte('{')
+					formattedStr.WriteString(argNumberStr)
+					formattedStr.WriteByte('}')
 				}
 				i = j
 			}
@@ -170,10 +172,18 @@ func FormatComplex(template string, args map[string]any) string {
 				break
 			}
 
-			if template[i+1] == '{' { // todo: umv: this not considering {{0}}
+			if template[i+1] == '{' {
 				formattedStr.WriteByte('{')
 				continue
 			}
+			// find end of placeholder
+			// process empty pair - {}
+			if template[i+1] == '}' {
+				i++
+				formattedStr.WriteString("{}")
+				continue
+			}
+			// process non-empty placeholder
 
 			// find end of placeholder
 			j = i + 2
@@ -215,14 +225,12 @@ func FormatComplex(template string, args map[string]any) string {
 					strVal := getItemAsStr(&arg, &argFormatOptions)
 					formattedStr.WriteString(strVal)
 				} else {
-					if argNumberStr != "" {
-						formattedStr.WriteByte('{')
-						formattedStr.WriteString(argNumberStr)
-						formattedStr.WriteByte('}')
-					} else {
-						// complicated case when we have brackets in line and open line at the end
-						formattedStr.WriteByte('{')
-					}
+					formattedStr.WriteByte('{')
+
+					//if argNumberStr != "" {
+					formattedStr.WriteString(argNumberStr)
+					formattedStr.WriteByte('}')
+					//}
 				}
 				i = j
 			}
