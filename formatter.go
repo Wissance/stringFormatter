@@ -117,9 +117,14 @@ func Format(template string, args ...any) string {
 					strVal := getItemAsStr(&args[argNumber], &argFormatOptions)
 					formattedStr.WriteString(strVal)
 				} else {
-					formattedStr.WriteByte('{')
-					formattedStr.WriteString(argNumberStr)
-					formattedStr.WriteByte('}')
+					if argNumberStr != "" {
+						formattedStr.WriteByte('{')
+						formattedStr.WriteString(argNumberStr)
+						formattedStr.WriteByte('}')
+					} else {
+						// complicated case when we have brackets in line and open line at the end
+						formattedStr.WriteByte('{')
+					}
 				}
 				i = j
 			}
@@ -210,9 +215,14 @@ func FormatComplex(template string, args map[string]any) string {
 					strVal := getItemAsStr(&arg, &argFormatOptions)
 					formattedStr.WriteString(strVal)
 				} else {
-					formattedStr.WriteByte('{')
-					formattedStr.WriteString(argNumberStr)
-					formattedStr.WriteByte('}')
+					if argNumberStr != "" {
+						formattedStr.WriteByte('{')
+						formattedStr.WriteString(argNumberStr)
+						formattedStr.WriteByte('}')
+					} else {
+						// complicated case when we have brackets in line and open line at the end
+						formattedStr.WriteByte('{')
+					}
 				}
 				i = j
 			}
