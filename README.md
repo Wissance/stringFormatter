@@ -6,14 +6,14 @@ A set of a ***high performance string tools*** that helps to build strings from 
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/wissance/stringFormatter?style=plastic) 
 ![GitHub issues](https://img.shields.io/github/issues/wissance/stringFormatter?style=plastic)
 ![GitHub Release Date](https://img.shields.io/github/release-date/wissance/stringFormatter) 
-![GitHub release (latest by date)](https://img.shields.io/github/downloads/wissance/stringFormatter/v1.2.2/total?style=plastic)
+![GitHub release (latest by date)](https://img.shields.io/github/downloads/wissance/stringFormatter/v1.3.0/total?style=plastic)
 
-![String Formatter: a convenient string formatting tool](/img/sf_cover.png)
+![String Formatter: a convenient string formatting tool](img/sf_cover.png)
 
 ## 1. Features
 
-1. Text formatting with template using traditional for `C#, Python programmers style` - `{0}`, `{name}` that faster then fmt does:
-![String Formatter: a convenient string formatting tool](/img/benchmarks_adv.png)
+1. Text formatting with template using traditional for `C#, Python programmers style` - `{0}`, `{name}` that faster then `fmt` does:
+![String Formatter: a convenient string formatting tool](img/benchmarks_adv.png)
 2. Additional text utilities:
    - convert ***map to string*** using one of predefined formats (see `text_utils.go`)
 
