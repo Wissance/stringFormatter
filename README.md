@@ -1,13 +1,12 @@
 # StringFormatter
 
-A set of a ***high performance string tools*** that helps to build strings from templates and process text that 
-faster than `fmt`!!!.
+A set of a ***high performance string tools*** that helps to build strings from templates and process text faster than with `fmt`!!!.
 
 ![GitHub go.mod Go version (subdirectory of monorepo)](https://img.shields.io/github/go-mod/go-version/wissance/stringFormatter?style=plastic) 
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/wissance/stringFormatter?style=plastic) 
 ![GitHub issues](https://img.shields.io/github/issues/wissance/stringFormatter?style=plastic)
 ![GitHub Release Date](https://img.shields.io/github/release-date/wissance/stringFormatter) 
-![GitHub release (latest by date)](https://img.shields.io/github/downloads/wissance/stringFormatter/v1.2.0/total?style=plastic)
+![GitHub release (latest by date)](https://img.shields.io/github/downloads/wissance/stringFormatter/v1.2.1/total?style=plastic)
 
 ![String Formatter: a convenient string formatting tool](/img/sf_cover.png)
 

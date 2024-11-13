@@ -44,6 +44,9 @@ func Format(template string, args ...any) string {
 		if template[i] == '{' {
 			// possibly it is a template placeholder
 			if i == templateLen-1 {
+				// if we gave { at the end of line i.e. -> type serviceHealth struct {,
+				// without this write we got type serviceHealth struct
+				formattedStr.WriteByte('{')
 				break
 			}
 			// considering in 2 phases - {{ }}
@@ -156,6 +159,9 @@ func FormatComplex(template string, args map[string]any) string {
 		if template[i] == '{' {
 			// possibly it is a template placeholder
 			if i == templateLen-1 {
+				// if we gave { at the end of line i.e. -> type serviceHealth struct {,
+				// without this write we got type serviceHealth struct
+				formattedStr.WriteByte('{')
 				break
 			}
 

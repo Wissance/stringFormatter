@@ -113,6 +113,11 @@ func TestFormat(t *testing.T) {
 			},
 			expected: "Example is: {123 This is a test str, nothing more special -1.098743 main question error, is 42}",
 		},
+		"open bracket at the end of line of go file": {
+			template: "type serviceHealth struct {",
+			args:     []any{},
+			expected: "type serviceHealth struct {",
+		},
 	} {
 		t.Run(name, func(t *testing.T) {
 			assert.Equal(t, test.expected, stringFormatter.Format(test.template, test.args...))
@@ -191,6 +196,11 @@ func TestFormatComplex(t *testing.T) {
 			template: "Current app settings are: ipAddr: {ipaddr}, port: {port}, use ssl: {ssl}.",
 			args:     map[string]any{"ipaddr": "127.0.0.1", "port": 5432, "ssl": false},
 			expected: "Current app settings are: ipAddr: 127.0.0.1, port: 5432, use ssl: false.",
+		},
+		"one json line with open bracket at the end": {
+			template: "    \"server\": {",
+			args:     map[string]any{},
+			expected: "    \"server\": {",
 		},
 	} {
 		t.Run(name, func(t *testing.T) {
