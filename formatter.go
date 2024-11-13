@@ -160,7 +160,7 @@ func FormatComplex(template string, args map[string]any) string {
 			// possibly it is a template placeholder
 			if i == templateLen-1 {
 				// if we gave { at the end of line i.e. -> type serviceHealth struct {,
-				// without this write we got type serviceHealth struct 
+				// without this write we got type serviceHealth struct
 				formattedStr.WriteByte('{')
 				break
 			}
