@@ -129,6 +129,27 @@ func TestFormat(t *testing.T) {
 			args:     []any{},
 			expected: "func afterHandle(respWriter *http.ResponseWriter, statusCode int, data interface{}) }",
 		},
+
+		"no bracket at the end of line with {} inside": {
+			template: "func afterHandle(respWriter *http.ResponseWriter, statusCode int, data interface{}) ",
+			args:     []any{},
+			expected: "func afterHandle(respWriter *http.ResponseWriter, statusCode int, data interface{}) ",
+		},
+		"open bracket at the end of line of go line with multiple {} inside": {
+			template: "func afterHandle(respWriter *http.ResponseWriter, statusCode int, data interface{}, additionalData interface{}) {",
+			args:     []any{},
+			expected: "func afterHandle(respWriter *http.ResponseWriter, statusCode int, data interface{}, additionalData interface{}) {",
+		},
+		"commentaries after bracket": {
+			template: "switch app.appConfig.ServerCfg.Schema { //nolint:exhaustive",
+			args:     []any{},
+			expected: "switch app.appConfig.ServerCfg.Schema { //nolint:exhaustive",
+		},
+		"bracket in the middle": {
+			template: "in the middle - { at the end - nothing",
+			args:     []any{},
+			expected: "in the middle - { at the end - nothing",
+		},
 	} {
 		t.Run(name, func(t *testing.T) {
 			assert.Equal(t, test.expected, stringFormatter.Format(test.template, test.args...))
@@ -219,10 +240,21 @@ func TestFormatComplex(t *testing.T) {
 			expected: "func afterHandle(respWriter *http.ResponseWriter, statusCode int, data interface{}) {",
 		},
 
+		"open bracket at the end of line of go line with multiple {} inside": {
+			template: "func afterHandle(respWriter *http.ResponseWriter, statusCode int, data interface{}, additionalData interface{}) {",
+			args:     map[string]any{},
+			expected: "func afterHandle(respWriter *http.ResponseWriter, statusCode int, data interface{}, additionalData interface{}) {",
+		},
+
 		"close bracket at the end of line of go line with {} inside": {
 			template: "func afterHandle(respWriter *http.ResponseWriter, statusCode int, data interface{}) }",
 			args:     map[string]any{},
 			expected: "func afterHandle(respWriter *http.ResponseWriter, statusCode int, data interface{}) }",
+		},
+		"commentaries after bracket": {
+			template: "switch app.appConfig.ServerCfg.Schema { //nolint:exhaustive",
+			args:     map[string]any{},
+			expected: "switch app.appConfig.ServerCfg.Schema { //nolint:exhaustive",
 		},
 	} {
 		t.Run(name, func(t *testing.T) {

@@ -7,6 +7,7 @@ import (
 )
 
 const argumentFormatSeparator = ":"
+const bytesPerArgDefault = 20
 
 // Format
 /* Func that makes string formatting from template
@@ -35,7 +36,8 @@ func Format(template string, args ...any) string {
 
 	templateLen := len(template)
 	formattedStr := &strings.Builder{}
-	formattedStr.Grow(templateLen + 22*len(args))
+	argsLen := bytesPerArgDefault * len(args)
+	formattedStr.Grow(templateLen + argsLen + 1)
 	j := -1 //nolint:ineffassign
 
 	nestedBrackets := false
@@ -55,6 +57,13 @@ func Format(template string, args ...any) string {
 				continue
 			}
 			// find end of placeholder
+			// process empty pair - {}
+			if template[i+1] == '}' {
+				i++
+				formattedStr.WriteString("{}")
+				continue
+			}
+			// process non-empty placeholder
 			j = i + 2
 			for {
 				if j >= templateLen {
@@ -117,13 +126,9 @@ func Format(template string, args ...any) string {
 					strVal := getItemAsStr(&args[argNumber], &argFormatOptions)
 					formattedStr.WriteString(strVal)
 				} else {
-					if argNumberStr != "" {
-						formattedStr.WriteByte('{')
-						formattedStr.WriteString(argNumberStr)
-						formattedStr.WriteByte('}')
-					} else {
-						// complicated case when we have brackets in line and open line at the end
-						formattedStr.WriteByte('{')
+					formattedStr.WriteString(template[i:j])
+					if j < templateLen-1 {
+						formattedStr.WriteByte(template[j])
 					}
 				}
 				i = j
@@ -156,7 +161,8 @@ func FormatComplex(template string, args map[string]any) string {
 
 	templateLen := len(template)
 	formattedStr := &strings.Builder{}
-	formattedStr.Grow(templateLen + 22*len(args))
+	argsLen := bytesPerArgDefault * len(args)
+	formattedStr.Grow(templateLen + argsLen + 1)
 	j := -1 //nolint:ineffassign
 	nestedBrackets := false
 	formattedStr.WriteString(template[:start])
@@ -170,10 +176,18 @@ func FormatComplex(template string, args map[string]any) string {
 				break
 			}
 
-			if template[i+1] == '{' { // todo: umv: this not considering {{0}}
+			if template[i+1] == '{' {
 				formattedStr.WriteByte('{')
 				continue
 			}
+			// find end of placeholder
+			// process empty pair - {}
+			if template[i+1] == '}' {
+				i++
+				formattedStr.WriteString("{}")
+				continue
+			}
+			// process non-empty placeholder
 
 			// find end of placeholder
 			j = i + 2
@@ -212,16 +226,20 @@ func FormatComplex(template string, args map[string]any) string {
 				}
 				if ok || (argFormatOptions != "" && !nestedBrackets) {
 					// get number from placeholder
-					strVal := getItemAsStr(&arg, &argFormatOptions)
+					strVal := ""
+					if arg != nil {
+						strVal = getItemAsStr(&arg, &argFormatOptions)
+					} else {
+						formattedStr.WriteString(template[i:j])
+						if j < templateLen-1 {
+							formattedStr.WriteByte(template[j])
+						}
+					}
 					formattedStr.WriteString(strVal)
 				} else {
-					if argNumberStr != "" {
-						formattedStr.WriteByte('{')
-						formattedStr.WriteString(argNumberStr)
-						formattedStr.WriteByte('}')
-					} else {
-						// complicated case when we have brackets in line and open line at the end
-						formattedStr.WriteByte('{')
+					formattedStr.WriteString(template[i:j])
+					if j < templateLen-1 {
+						formattedStr.WriteByte(template[j])
 					}
 				}
 				i = j
