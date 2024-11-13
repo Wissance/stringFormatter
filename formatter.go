@@ -226,11 +226,8 @@ func FormatComplex(template string, args map[string]any) string {
 					formattedStr.WriteString(strVal)
 				} else {
 					formattedStr.WriteByte('{')
-
-					//if argNumberStr != "" {
 					formattedStr.WriteString(argNumberStr)
 					formattedStr.WriteByte('}')
-					//}
 				}
 				i = j
 			}
