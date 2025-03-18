@@ -218,7 +218,8 @@ func FormatComplex(template string, args map[string]any) string {
 				if !ok {
 					formatOptionIndex := strings.Index(argNumberStr, argumentFormatSeparator)
 					if formatOptionIndex >= 0 {
-						argFormatOptions = strings.Trim(argNumberStr[formatOptionIndex+1:], " ")
+						// argFormatOptions = strings.Trim(argNumberStr[formatOptionIndex+1:], " ")
+						argFormatOptions = argNumberStr[formatOptionIndex+1:]
 						argNumberStr = strings.Trim(argNumberStr[:formatOptionIndex], " ")
 					}
 
