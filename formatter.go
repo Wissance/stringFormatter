@@ -331,7 +331,15 @@ func getItemAsStr(item *any, itemFormat *string) string {
 					return strconv.FormatFloat(percentage, floatFormat, 2, 64)
 				}
 			}
-
+		// l(L) is for list(slice)
+		case 'l', 'L':
+			separator := ","
+			if len(*itemFormat) > 1 {
+				separator = preparedArgFormat[1:]
+			}
+			// slice processing converting to {item}{delimiter}{item}{delimiter}{item}
+			slice := (*item).([]any)
+			return SliceToString(&slice, &separator)
 		default:
 			base = 10
 		}
