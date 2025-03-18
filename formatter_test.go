@@ -183,6 +183,21 @@ func TestFormatWithArgFormatting(t *testing.T) {
 			args:     []any{12, "ass"},
 			expected: "This is the text with percentage format - 12.00 / 11.94, and non normal percentage 0.00",
 		},
+		"list_with_default_sep": {
+			template: "This is a list(slice) test: {0:L}",
+			args:     []any{[]any{"s1", "s2", "s3"}},
+			expected: "This is a list(slice) test: s1,s2,s3",
+		},
+		"list_with_dash_sep": {
+			template: "This is a list(slice) test: {0:L-}",
+			args:     []any{[]any{"s1", "s2", "s3"}},
+			expected: "This is a list(slice) test: s1-s2-s3",
+		},
+		"list_with_space_sep": {
+			template: "This is a list(slice) test: {0:L }",
+			args:     []any{[]any{"s1", "s2", "s3"}},
+			expected: "This is a list(slice) test: s1 s2 s3",
+		},
 	} {
 		// Run test here
 		t.Run(name, func(t *testing.T) {
@@ -283,6 +298,21 @@ func TestFormatComplexWithArgFormatting(t *testing.T) {
 			template: "This is the text with an only number formatting: decimal - {float:F} / {float : F4} / {float:F8}",
 			args:     map[string]any{"float": 10.5467890},
 			expected: "This is the text with an only number formatting: decimal - 10.546789 / 10.5468 / 10.54678900",
+		},
+		"list_with_default_sep": {
+			template: "This is a list(slice) test: {list:L}",
+			args:     map[string]any{"list": []any{"s1", "s2", "s3"}},
+			expected: "This is a list(slice) test: s1,s2,s3",
+		},
+		"list_with_dash_sep": {
+			template: "This is a list(slice) test: {list:L-}",
+			args:     map[string]any{"list": []any{"s1", "s2", "s3"}},
+			expected: "This is a list(slice) test: s1-s2-s3",
+		},
+		"list_with_space_sep": {
+			template: "This is a list(slice) test: {list:L }",
+			args:     map[string]any{"list": []any{"s1", "s2", "s3"}},
+			expected: "This is a list(slice) test: s1 s2 s3",
 		},
 	} {
 		t.Run(name, func(t *testing.T) {

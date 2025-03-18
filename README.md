@@ -1,6 +1,7 @@
 # StringFormatter
 
 A set of a ***high performance string tools*** that helps to build strings from templates and process text faster than with `fmt`!!!.
+Slice printing is **50% faster with 8 items** slice and **250% with 20 items** slice 
 
 ![GitHub go.mod Go version (subdirectory of monorepo)](https://img.shields.io/github/go-mod/go-version/wissance/stringFormatter?style=plastic) 
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/wissance/stringFormatter?style=plastic) 
@@ -76,6 +77,9 @@ For more convenient lines formatting we should choose how arguments are represen
    - `{0:F8}, 10.4567890 outputs -> 10.45678900`
 5. Percentage output
    - `{0:P100}, 12 outputs -> 12%`
+6. Lists
+   - `{0:L-}, [1,2,3] outputs -> 1-2-3`
+   - `{0:L, }, [1,2,3] outputs -> 1, 2, 3`
 
 ##### 1.2.4 Benchmarks of the Format and FormatComplex functions
 
@@ -107,11 +111,25 @@ str := stringFormatter.MapToString(&options, "{key} : {value}", ", ")
 "connectTimeout : 1000, useSsl : true, login : sa, password : sa"
 ```
 
-#### 2.2 Benchmarks of the MapToStr function
+#### 2.2 Benchmarks of the MapToString function
 
 * to see `MapToStr` result - `go test -bench=MapToStr -benchmem -cpu 1`
 
 ![MapToStr benchmarks](/img/map2str_benchmarks.png)
+
+#### 2.3 Slice to string utility
+
+`SliceToString` - function that converts slice with passed separation between items to string.
+```go
+slice := []any{100, "200", 300, "400", 500, 600, "700", 800, 1.09, "hello"}
+separator := ","
+result := stringFormatter.SliceToString(&slice, &separator)
+```
+
+#### 2.4 Benchmarks of the SliceToString function
+
+`sf` is rather fast then `fmt` 2.5 times (250%) faster on slice with 20 items, see benchmark:
+![SliceToStr benchmarks](/img/slice2str_benchmarks.png)
 
 ### 3. Contributors
 
