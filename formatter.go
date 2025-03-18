@@ -7,7 +7,7 @@ import (
 )
 
 const argumentFormatSeparator = ":"
-const bytesPerArgDefault = 20
+const bytesPerArgDefault = 16
 
 // Format
 /* Func that makes string formatting from template
@@ -105,8 +105,8 @@ func Format(template string, args ...any) string {
 					formatOptionIndex := strings.Index(argNumberStr, argumentFormatSeparator)
 					// formatOptionIndex can't be == 0, because 0 is a position of arg number
 					if formatOptionIndex > 0 {
-						// trim formatting string to remove spaces
-						argFormatOptions = strings.Trim(argNumberStr[formatOptionIndex+1:], " ")
+						// trimmed was down later due to we could format list with space separator
+						argFormatOptions = argNumberStr[formatOptionIndex+1:]
 						argNumberStrPart := argNumberStr[:formatOptionIndex]
 						argNumber, err = strconv.Atoi(strings.Trim(argNumberStrPart, " "))
 						if err == nil {
@@ -278,10 +278,11 @@ func getItemAsStr(item *any, itemFormat *string) string {
 		 * OUR own addition:
 		 * 1. O(o) - octahedral number format
 		 */
-		preparedArgFormat = *itemFormat
+		// preparedArgFormat is trimmed format, L type could contain spaces
+		preparedArgFormat = strings.Trim(*itemFormat, " ")
 		postProcessingRequired = len(preparedArgFormat) > 1
 
-		switch rune((*itemFormat)[0]) {
+		switch rune(preparedArgFormat[0]) {
 		case 'd', 'D':
 			base = 10
 			intNumberFormat = true
@@ -335,7 +336,7 @@ func getItemAsStr(item *any, itemFormat *string) string {
 		case 'l', 'L':
 			separator := ","
 			if len(*itemFormat) > 1 {
-				separator = preparedArgFormat[1:]
+				separator = (*itemFormat)[1:]
 			}
 			// slice processing converting to {item}{delimiter}{item}{delimiter}{item}
 			slice := (*item).([]any)

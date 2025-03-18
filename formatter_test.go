@@ -183,6 +183,21 @@ func TestFormatWithArgFormatting(t *testing.T) {
 			args:     []any{12, "ass"},
 			expected: "This is the text with percentage format - 12.00 / 11.94, and non normal percentage 0.00",
 		},
+		"list_with_default_sep": {
+			template: "This is a list(slice) test: {0:L}",
+			args:     []any{[]any{"s1", "s2", "s3"}},
+			expected: "This is a list(slice) test: s1,s2,s3",
+		},
+		"list_with_dash_sep": {
+			template: "This is a list(slice) test: {0:L-}",
+			args:     []any{[]any{"s1", "s2", "s3"}},
+			expected: "This is a list(slice) test: s1-s2-s3",
+		},
+		"list_with_space_sep": {
+			template: "This is a list(slice) test: {0:L }",
+			args:     []any{[]any{"s1", "s2", "s3"}},
+			expected: "This is a list(slice) test: s1 s2 s3",
+		},
 	} {
 		// Run test here
 		t.Run(name, func(t *testing.T) {
