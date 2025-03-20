@@ -29,3 +29,10 @@ func TestSliceToString(t *testing.T) {
 		})
 	}
 }
+
+func TestSliceSameTypeToString(t *testing.T) {
+	separator := ":"
+	numericSlice := []int{100, 200, 400, 800}
+	result := stringFormatter.SliceSameTypeToString(&numericSlice, &separator)
+	assert.Equal(t, "100:200:400:800", result)
+}

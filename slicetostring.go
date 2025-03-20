@@ -23,3 +23,23 @@ func SliceToString(data *[]any, separator *string) string {
 
 	return sliceStr.String()
 }
+
+func SliceSameTypeToString[T any](data *[]T, separator *string) string {
+	if len(*data) == 0 {
+		return ""
+	}
+
+	sliceStr := &strings.Builder{}
+	// init memory initially
+	sliceStr.Grow(len(*data)*len(*separator)*2 + (len(*data)-1)*len(*separator))
+	isFirst := true
+	for _, item := range *data {
+		if !isFirst {
+			sliceStr.WriteString(*separator)
+		}
+		sliceStr.WriteString(Format("{0}", item))
+		isFirst = false
+	}
+
+	return sliceStr.String()
+}
