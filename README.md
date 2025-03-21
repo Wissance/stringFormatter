@@ -126,6 +126,13 @@ separator := ","
 result := stringFormatter.SliceToString(&slice, &separator)
 ```
 
+`SliceSameTypeToString` - function that converts typed slice to line with separator
+```go
+separator := ":"
+numericSlice := []int{100, 200, 400, 800}
+result := stringFormatter.SliceSameTypeToString(&numericSlice, &separator)
+```
+
 #### 2.4 Benchmarks of the SliceToString function
 
 `sf` is rather fast then `fmt` 2.5 times (250%) faster on slice with 20 items, see benchmark:
