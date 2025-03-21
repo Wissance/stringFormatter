@@ -461,7 +461,7 @@ func convertSliceToStrWithTypeDiscover(slice *any, separator *string) string {
 	}
 
 	// 6. attempt to convert to int64
-	i64Slice, ok := (*slice).([]bool)
+	i64Slice, ok := (*slice).([]int64)
 	if ok {
 		return SliceSameTypeToString(&i64Slice, separator)
 	}
