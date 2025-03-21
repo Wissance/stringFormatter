@@ -218,6 +218,16 @@ func TestFormatWithArgFormattingForTypedSlice(t *testing.T) {
 			args:     []any{[]int{101, 202, 303}},
 			expected: "This is a list(slice) test: 101-202-303",
 		},
+		"list_with_uint_slice": {
+			template: "This is a list(slice) test: {0:L-}",
+			args:     []any{[]uint{102, 204, 308}},
+			expected: "This is a list(slice) test: 102-204-308",
+		},
+		"list_with_int32_slice": {
+			template: "This is a list(slice) test: {0:L-}",
+			args:     []any{[]int32{100, 200, 300}},
+			expected: "This is a list(slice) test: 100-200-300",
+		},
 	} {
 		// Run test here
 		t.Run(name, func(t *testing.T) {
