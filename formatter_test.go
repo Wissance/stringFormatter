@@ -207,6 +207,26 @@ func TestFormatWithArgFormatting(t *testing.T) {
 	}
 }
 
+func TestFormatWithArgFormattingForTypedSlice(t *testing.T) {
+	for name, test := range map[string]struct {
+		template string
+		args     []any
+		expected string
+	}{
+		"list_with_int_slice": {
+			template: "This is a list(slice) test: {0:L-}",
+			args:     []any{[]int{101, 202, 303}},
+			expected: "This is a list(slice) test: 101-202-303",
+		},
+	} {
+		// Run test here
+		t.Run(name, func(t *testing.T) {
+			// assert.NotNil(t, test)
+			assert.Equal(t, test.expected, stringFormatter.Format(test.template, test.args...))
+		})
+	}
+}
+
 // TestStrFormatWithComplicatedText - this test represents issue with complicated text
 func TestFormatComplex(t *testing.T) {
 	for name, test := range map[string]struct {
