@@ -29,6 +29,13 @@ func BenchmarkSliceToStringAdvanced10MixedItems(b *testing.B) {
 	}
 }
 
+func BenchmarkSliceToStringAdvanced10TypedItems(b *testing.B) {
+	slice := []int32{100, 102, 300, 404, 500, 600, 707, 800, 909, 1024}
+	for i := 0; i < b.N; i++ {
+		_ = stringFormatter.Format("{0:L,}", []any{slice})
+	}
+}
+
 func BenchmarkSliceStandard10MixedItems(b *testing.B) {
 	slice := []any{100, "200", 300, "400", 500, 600, "700", 800, 1.09, "hello"}
 	for i := 0; i < b.N; i++ {
@@ -39,9 +46,17 @@ func BenchmarkSliceStandard10MixedItems(b *testing.B) {
 func BenchmarkSliceToStringAdvanced20StrItems(b *testing.B) {
 	slice := []any{"str1", "str2", "str3", "str4", "str5", "str6", "str7", "str8", "str9", "str10",
 		"str11", "str12", "str13", "str14", "str15", "str16", "str17", "str18", "str19", "str20"}
+	for i := 0; i < b.N; i++ {
+		_ = stringFormatter.Format("{0:L,}", []any{slice})
+	}
+}
+
+func BenchmarkSliceToStringAdvanced20TypedStrItems(b *testing.B) {
+	slice := []string{"str1", "str2", "str3", "str4", "str5", "str6", "str7", "str8", "str9", "str10",
+		"str11", "str12", "str13", "str14", "str15", "str16", "str17", "str18", "str19", "str20"}
 	separator := ","
 	for i := 0; i < b.N; i++ {
-		_ = stringFormatter.SliceToString(&slice, &separator)
+		_ = stringFormatter.SliceSameTypeToString(&slice, &separator)
 	}
 }
 

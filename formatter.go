@@ -339,9 +339,18 @@ func getItemAsStr(item *any, itemFormat *string) string {
 			if len(*itemFormat) > 1 {
 				separator = (*itemFormat)[1:]
 			}
+
 			// slice processing converting to {item}{delimiter}{item}{delimiter}{item}
-			slice := (*item).([]any)
-			return SliceToString(&slice, &separator)
+			slice, ok := (*item).([]any)
+			if ok {
+				if len(slice) == 1 {
+					// this is because slice in 0 item contains another slice, we should take it
+					slice, ok = slice[0].([]any)
+				}
+				return SliceToString(&slice, &separator)
+			} else {
+				return convertSliceToStrWithTypeDiscover(item, &separator)
+			}
 		default:
 			base = 10
 		}
@@ -418,4 +427,57 @@ func getItemAsStr(item *any, itemFormat *string) string {
 	}
 
 	return argStr
+}
+
+func convertSliceToStrWithTypeDiscover(slice *any, separator *string) string {
+	// 1. attempt to convert to int
+	iSlice, ok := (*slice).([]int)
+	if ok {
+		return SliceSameTypeToString(&iSlice, separator)
+	}
+
+	// 2. attempt to convert to string
+	sSlice, ok := (*slice).([]string)
+	if ok {
+		return SliceSameTypeToString(&sSlice, separator)
+	}
+
+	// 3. attempt to convert to float64
+	f64Slice, ok := (*slice).([]float64)
+	if ok {
+		return SliceSameTypeToString(&f64Slice, separator)
+	}
+
+	// 4. attempt to convert to float32
+	f32Slice, ok := (*slice).([]float32)
+	if ok {
+		return SliceSameTypeToString(&f32Slice, separator)
+	}
+
+	// 5. attempt to convert to bool
+	bSlice, ok := (*slice).([]bool)
+	if ok {
+		return SliceSameTypeToString(&bSlice, separator)
+	}
+
+	// 6. attempt to convert to int64
+	i64Slice, ok := (*slice).([]int64)
+	if ok {
+		return SliceSameTypeToString(&i64Slice, separator)
+	}
+
+	// 7. attempt to convert to uint
+	uiSlice, ok := (*slice).([]uint)
+	if ok {
+		return SliceSameTypeToString(&uiSlice, separator)
+	}
+
+	// 8. attempt to convert to int32
+	i32Slice, ok := (*slice).([]int32)
+	if ok {
+		return SliceSameTypeToString(&i32Slice, separator)
+	}
+
+	// default way ...
+	return fmt.Sprintf("%v", *slice)
 }

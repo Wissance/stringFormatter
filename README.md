@@ -7,7 +7,7 @@ Slice printing is **50% faster with 8 items** slice and **250% with 20 items** s
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/wissance/stringFormatter?style=plastic) 
 ![GitHub issues](https://img.shields.io/github/issues/wissance/stringFormatter?style=plastic)
 ![GitHub Release Date](https://img.shields.io/github/release-date/wissance/stringFormatter) 
-![GitHub release (latest by date)](https://img.shields.io/github/downloads/wissance/stringFormatter/v1.3.0/total?style=plastic)
+![GitHub release (latest by date)](https://img.shields.io/github/downloads/wissance/stringFormatter/v1.4.1/total?style=plastic)
 
 ![String Formatter: a convenient string formatting tool](img/sf_cover.png)
 
@@ -124,6 +124,13 @@ str := stringFormatter.MapToString(&options, "{key} : {value}", ", ")
 slice := []any{100, "200", 300, "400", 500, 600, "700", 800, 1.09, "hello"}
 separator := ","
 result := stringFormatter.SliceToString(&slice, &separator)
+```
+
+`SliceSameTypeToString` - function that converts typed slice to line with separator
+```go
+separator := ":"
+numericSlice := []int{100, 200, 400, 800}
+result := stringFormatter.SliceSameTypeToString(&numericSlice, &separator)
 ```
 
 #### 2.4 Benchmarks of the SliceToString function
