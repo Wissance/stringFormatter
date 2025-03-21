@@ -29,6 +29,13 @@ func BenchmarkSliceToStringAdvanced10MixedItems(b *testing.B) {
 	}
 }
 
+func BenchmarkSliceToStringAdvanced10TypedItems(b *testing.B) {
+	slice := []int32{100, 102, 300, 404, 500, 600, 707, 800, 909, 1024}
+	for i := 0; i < b.N; i++ {
+		_ = stringFormatter.Format("{0:L,}", []any{slice})
+	}
+}
+
 func BenchmarkSliceStandard10MixedItems(b *testing.B) {
 	slice := []any{100, "200", 300, "400", 500, 600, "700", 800, 1.09, "hello"}
 	for i := 0; i < b.N; i++ {
