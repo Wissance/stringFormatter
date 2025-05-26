@@ -150,6 +150,16 @@ func TestFormat(t *testing.T) {
 			args:     []any{},
 			expected: "in the middle - { at the end - nothing",
 		},
+		"code line with interface": {
+			template: "[]any{singleValue}",
+			args:     []any{},
+			expected: "[]any{singleValue}",
+		},
+		"code line with interface with val": {
+			template: "[]any{{0}}",
+			args:     []any{"\"USSR!\""},
+			expected: "[]any{\"USSR!\"}",
+		},
 	} {
 		t.Run(name, func(t *testing.T) {
 			assert.Equal(t, test.expected, stringFormatter.Format(test.template, test.args...))
@@ -325,6 +335,16 @@ func TestFormatComplex(t *testing.T) {
 			template: "switch app.appConfig.ServerCfg.Schema { //nolint:exhaustive",
 			args:     map[string]any{},
 			expected: "switch app.appConfig.ServerCfg.Schema { //nolint:exhaustive",
+		},
+		"code line with interface": {
+			template: "[]any{singleValue}",
+			args:     map[string]any{},
+			expected: "[]any{singleValue}",
+		},
+		"code line with interface with val": {
+			template: "[]any{{val}}",
+			args:     map[string]any{"val": "\"USSR!\""},
+			expected: "[]any{\"USSR!\"}",
 		},
 	} {
 		t.Run(name, func(t *testing.T) {
