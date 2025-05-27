@@ -127,7 +127,7 @@ func Format(template string, args ...any) string {
 					formattedStr.WriteString(strVal)
 				} else {
 					formattedStr.WriteString(template[i:j])
-					if j < templateLen-1 {
+					if j <= templateLen-1 {
 						formattedStr.WriteByte(template[j])
 					}
 				}
@@ -232,14 +232,14 @@ func FormatComplex(template string, args map[string]any) string {
 						strVal = getItemAsStr(&arg, &argFormatOptions)
 					} else {
 						formattedStr.WriteString(template[i:j])
-						if j < templateLen-1 {
+						if j <= templateLen-1 {
 							formattedStr.WriteByte(template[j])
 						}
 					}
 					formattedStr.WriteString(strVal)
 				} else {
 					formattedStr.WriteString(template[i:j])
-					if j < templateLen-1 {
+					if j <= templateLen-1 {
 						formattedStr.WriteByte(template[j])
 					}
 				}
