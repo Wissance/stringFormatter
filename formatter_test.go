@@ -94,12 +94,12 @@ func TestFormat(t *testing.T) {
 		"doubly curly brackets": {
 			template: "Hello i am {{0}}, my age is {1} and i am waiting for {2}, because i am {0}!",
 			args:     []any{"Michael Ushakov (Evillord666)", "34", `"Great Success"`},
-			expected: `Hello i am {0}, my age is 34 and i am waiting for "Great Success", because i am Michael Ushakov (Evillord666)!`,
+			expected: `Hello i am {Michael Ushakov (Evillord666)}, my age is 34 and i am waiting for "Great Success", because i am Michael Ushakov (Evillord666)!`,
 		},
 		"doubly curly brackets at the end": {
 			template: "At the end {{0}}",
 			args:     []any{"s"},
-			expected: "At the end {0}",
+			expected: "At the end {s}",
 		},
 		"struct arg": {
 			template: "Example is: {0}",

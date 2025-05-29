@@ -86,8 +86,12 @@ func Format(template string, args ...any) string {
 			// double curly brackets processed here, convert {{N}} -> {N}
 			// so we catch here {{N}
 			if j+1 < templateLen && template[j+1] == '}' && template[i-1] == '{' {
-				formattedStr.WriteString(template[i+1 : j+1])
-				i = j + 1
+				// formattedStr.WriteString(template[i+1 : j+1])
+				subStr := template[i : j+1]
+				subStrFormatResult := Format(subStr, args...)
+				formattedStr.WriteString(subStrFormatResult)
+				//i = j + 1
+				i = j
 			} else {
 				argNumberStr := template[i+1 : j]
 				// is here we should support formatting ?
