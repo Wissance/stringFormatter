@@ -94,12 +94,17 @@ func TestFormat(t *testing.T) {
 		"doubly curly brackets": {
 			template: "Hello i am {{0}}, my age is {1} and i am waiting for {2}, because i am {0}!",
 			args:     []any{"Michael Ushakov (Evillord666)", "34", `"Great Success"`},
-			expected: `Hello i am {Michael Ushakov (Evillord666)}, my age is 34 and i am waiting for "Great Success", because i am Michael Ushakov (Evillord666)!`,
+			expected: `Hello i am {0}, my age is 34 and i am waiting for "Great Success", because i am Michael Ushakov (Evillord666)!`,
 		},
 		"doubly curly brackets at the end": {
 			template: "At the end {{0}}",
 			args:     []any{"s"},
-			expected: "At the end {s}",
+			expected: "At the end {0}",
+		},
+		"quadro curly brackets in the middle": {
+			template: "Not at the end {{{{0}}}}, in the middle",
+			args:     []any{"s"},
+			expected: "Not at the end {{0}}, in the middle",
 		},
 		"struct arg": {
 			template: "Example is: {0}",
@@ -156,7 +161,7 @@ func TestFormat(t *testing.T) {
 			expected: "[]any{singleValue}",
 		},
 		"code line with interface with val": {
-			template: "[]any{{0}}",
+			template: "[]any{{{0}}}",
 			args:     []any{"\"USSR!\""},
 			expected: "[]any{\"USSR!\"}",
 		},

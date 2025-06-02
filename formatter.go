@@ -9,6 +9,12 @@ import (
 const argumentFormatSeparator = ":"
 const bytesPerArgDefault = 16
 
+type processingState int
+
+const charAnalyzeState processingState = 1
+const segmentBeginDetectionState processingState = 2
+const segmentEndDetectionState processingState = 3
+
 // Format
 /* Func that makes string formatting from template
  * It differs from above function only by generic interface that allow to use only primitive data types:
@@ -39,112 +45,158 @@ func Format(template string, args ...any) string {
 	argsLen := bytesPerArgDefault * len(args)
 	formattedStr.Grow(templateLen + argsLen + 1)
 	j := -1 //nolint:ineffassign
+	repeatingOpenBrackets := 0
+	repeatingOpenBracketsCollected := false
+	repeatingCloseBrackets := 0
 
-	nestedBrackets := false
 	formattedStr.WriteString(template[:start])
+	state := charAnalyzeState
 	for i := start; i < templateLen; i++ {
-		if template[i] == '{' {
-			// possibly it is a template placeholder
-			if i == templateLen-1 {
-				// if we gave { at the end of line i.e. -> type serviceHealth struct {,
-				// without this write we got type serviceHealth struct
-				formattedStr.WriteByte('{')
-				break
-			}
-			// considering in 2 phases - {{ }}
-			if template[i+1] == '{' {
-				formattedStr.WriteByte('{')
-				continue
-			}
-			// find end of placeholder
-			// process empty pair - {}
-			if template[i+1] == '}' {
-				i++
-				formattedStr.WriteString("{}")
-				continue
-			}
-			// process non-empty placeholder
-			j = i + 2
-			for {
-				if j >= templateLen {
-					break
+		switch state {
+		case charAnalyzeState:
+			{
+				// this state is a space between segments
+				// 1. remember j to WriteStr from j to i
+				if j <= 0 {
+					j = i
 				}
 
-				if template[j] == '{' {
-					// multiple nested curly brackets ...
-					nestedBrackets = true
-					formattedStr.WriteString(template[i:j])
-					i = j
+				if template[i] == '{' {
+					formattedStr.WriteString(template[j:i])
+					// using j to remember a start of possible segment
+					j = i
+					state = segmentBeginDetectionState
+					repeatingOpenBracketsCollected = false
+					repeatingOpenBrackets = 1
 				}
-
-				if template[j] == '}' {
-					break
-				}
-
-				j++
 			}
-			// double curly brackets processed here, convert {{N}} -> {N}
-			// so we catch here {{N}
-			if j+1 < templateLen && template[j+1] == '}' && template[i-1] == '{' {
-				subStr := template[i : j+1]
-				formattedStr.WriteString(Format(subStr, args...))
-				i = j
-			} else {
-				argNumberStr := template[i+1 : j]
-				// is here we should support formatting ?
-				var argNumber int
-				var err error
-				var argFormatOptions string
-				if len(argNumberStr) == 1 {
-					// this calculation makes work a little faster than AtoI
-					argNumber = int(argNumberStr[0] - '0')
+		case segmentBeginDetectionState:
+			{
+				// segment could be complicated:
+				if template[i] == '{' {
+					if !repeatingOpenBracketsCollected {
+						repeatingOpenBrackets++
+					}
 				} else {
-					argNumber = -1
-					// Here we are going to process argument either with additional formatting or not
-					// i.e. 0 for arg without formatting && 0:format for an argument wit formatting
-					// todo(UMV): we could format json or yaml here ...
-					formatOptionIndex := strings.Index(argNumberStr, argumentFormatSeparator)
-					// formatOptionIndex can't be == 0, because 0 is a position of arg number
-					if formatOptionIndex > 0 {
-						// trimmed was down later due to we could format list with space separator
-						argFormatOptions = argNumberStr[formatOptionIndex+1:]
-						argNumberStrPart := argNumberStr[:formatOptionIndex]
-						argNumber, err = strconv.Atoi(strings.Trim(argNumberStrPart, " "))
-						if err == nil {
-							argNumberStr = argNumberStrPart
+					repeatingOpenBracketsCollected = true
+				}
+				// 1. JSON object, therefore we skip it
+				// 2. multiple nested seg {{{ and non-equal or equal number of closing brackets
+				if template[i] == '}' {
+					state = segmentEndDetectionState
+					repeatingCloseBrackets = 1
+				}
+			}
+		case segmentEndDetectionState:
+			{
+				if template[i] != '}' || i == templateLen-1 {
+					delta := repeatingOpenBrackets - repeatingCloseBrackets
+					// 1. Handle brackets before parts with equal number of brackets
+					if delta > 0 {
+						// Write { delta times
+						for z := 0; z < delta; z++ {
+							formattedStr.WriteByte('{')
 						}
-						// make formatting option str for further pass to an argument
+						j += delta
 					}
-					//
-					if argNumber < 0 {
-						argNumber, err = strconv.Atoi(argNumberStr)
-					}
-				}
+					// 2. Handle segment {..{arg}..}  with equal number of brackets
+					// subStr := template[j:i]
+					// 2.1 Multiple curly brackets handler
+					isEven := (repeatingOpenBrackets % 2) == 0
+					// single - {argNumberStr} handles by replace argNumber by data from list. double {{argNumberStr}} produces {argNumberStr}
+					// triple - prof
+					segmentPrecedingBrackets := repeatingOpenBrackets / 2
 
-				if (err == nil || (argFormatOptions != "" && !nestedBrackets)) &&
-					len(args) > argNumber {
-					// get number from placeholder
-					strVal := getItemAsStr(&args[argNumber], &argFormatOptions)
-					formattedStr.WriteString(strVal)
-				} else {
-					formattedStr.WriteString(template[i:j])
-					if j <= templateLen-1 {
-						formattedStr.WriteByte(template[j])
+					if !isEven {
+						segmentPrecedingBrackets = (repeatingOpenBrackets - 1) / 2
 					}
+
+					for z := 0; z < segmentPrecedingBrackets; z++ {
+						formattedStr.WriteByte('{')
+					}
+
+					argNumberStr := template[j+repeatingOpenBrackets : i-repeatingCloseBrackets]
+					// 2.2 Segment formatting
+					if !isEven {
+						j += repeatingOpenBrackets - 1
+						argNumber := -1
+						var err error
+						var argFormatOptions string
+						if len(argNumberStr) == 1 {
+							// this calculation makes work a little faster than AtoI
+							argNumber = int(argNumberStr[0] - '0')
+						} else {
+							argNumber = -1
+							// Here we are going to process argument either with additional formatting or not
+							// i.e. 0 for arg without formatting && 0:format for an argument wit formatting
+							// todo(UMV): we could format json or yaml here ...
+							formatOptionIndex := strings.Index(argNumberStr, argumentFormatSeparator)
+							// formatOptionIndex can't be == 0, because 0 is a position of arg number
+							if formatOptionIndex > 0 {
+								// trimmed was down later due to we could format list with space separator
+								argFormatOptions = argNumberStr[formatOptionIndex+1:]
+								argNumberStrPart := argNumberStr[:formatOptionIndex]
+								argNumber, err = strconv.Atoi(strings.Trim(argNumberStrPart, " "))
+								if err == nil {
+									argNumberStr = argNumberStrPart
+								}
+								// make formatting option str for further pass to an argument
+							}
+							//
+							if argNumber < 0 {
+								argNumber, err = strconv.Atoi(argNumberStr)
+							}
+						}
+
+						if (err == nil || (argFormatOptions != "" && !repeatingOpenBracketsCollected /*&& !nestedBrackets*/)) &&
+							len(args) > argNumber {
+							// get number from placeholder
+							strVal := getItemAsStr(&args[argNumber], &argFormatOptions)
+							formattedStr.WriteString(strVal)
+						} else {
+							formattedStr.WriteString(template[j:i]) //template[i:j]
+							if i <= templateLen-1 {
+								formattedStr.WriteByte(template[j]) // template[j]
+							}
+						}
+					} else {
+						formattedStr.WriteString(argNumberStr)
+					}
+
+					for z := 0; z < segmentPrecedingBrackets; z++ {
+						formattedStr.WriteByte('}')
+					}
+
+					// 3. Handle brackets after segment
+					for z := 0; z < delta*-1; z++ {
+						formattedStr.WriteByte('}')
+					}
+
+					state = charAnalyzeState
+					// process current i ! it also could be {
+					if i == templateLen-1 {
+						j = 0
+					} else {
+						j = i
+					}
+					repeatingOpenBrackets = 0
+					repeatingCloseBrackets = 0
+				} else {
+					repeatingCloseBrackets++
 				}
-				i = j
 			}
-		} else {
-			j = i //nolint:ineffassign
-			formattedStr.WriteByte(template[i])
 		}
+	}
+
+	if j != 0 {
+		formattedStr.WriteString(template[j:])
 	}
 
 	return formattedStr.String()
 }
 
 // FormatComplex
-/* Function that format text using more complex templates contains string literals i.e "Hello {username} here is our application {appname}
+/* Function that format text using more complex templates contains string literals i.e "Hello {username} here is our application {appname}"
  * Parameters
  *    - template - string that contains template
  *    - args - values (dictionary: string key - any value) that are using for formatting with template
