@@ -44,36 +44,44 @@ func Format(template string, args ...any) string {
 	formattedStr := &strings.Builder{}
 	argsLen := bytesPerArgDefault * len(args)
 	formattedStr.Grow(templateLen + argsLen + 1)
-	j := -1 //nolint:ineffassign
+	j := -1    //nolint:ineffassign
+	i := start // ???
 	repeatingOpenBrackets := 0
 	repeatingOpenBracketsCollected := false
 	repeatingCloseBrackets := 0
+	prevCloseBracketIndex := 0
 
 	formattedStr.WriteString(template[:start])
 	state := charAnalyzeState
-	for i := start; i < templateLen; i++ {
-		switch state {
-		case charAnalyzeState:
-			{
-				// this state is a space between segments
-				// 1. remember j to WriteStr from j to i
-				if j <= 0 {
-					j = i
-				}
-
-				if template[i] == '{' {
-					formattedStr.WriteString(template[j:i])
-					// using j to remember a start of possible segment
-					j = i
-					state = segmentBeginDetectionState
-					repeatingOpenBracketsCollected = false
-					repeatingOpenBrackets = 1
-				}
+	for {
+		// infinite loop, state changes on template string symbols processing, initially
+		// we have charAnalyzeState state
+		if state == charAnalyzeState {
+			// this state is a space between segments
+			// 1.1 remember j to WriteStr from j to i
+			if j < 0 {
+				j = i
 			}
-		case segmentBeginDetectionState:
-			{
+
+			if template[i] == '{' && i <= templateLen-2 {
+				formattedStr.WriteString(template[j:i])
+				// 1.2 using j to remember a start of possible segment
+				j = i
+				state = segmentBeginDetectionState
+				repeatingOpenBracketsCollected = false
+				repeatingOpenBrackets = 1
+			}
+
+			if i == templateLen-1 {
+				state = segmentEndDetectionState
+			}
+		} else {
+			if state == segmentBeginDetectionState {
 				// segment could be complicated:
 				if template[i] == '{' {
+					if template[i-1] != '{' {
+						state = charAnalyzeState
+					}
 					if !repeatingOpenBracketsCollected {
 						repeatingOpenBrackets++
 					}
@@ -85,112 +93,142 @@ func Format(template string, args ...any) string {
 				if template[i] == '}' {
 					state = segmentEndDetectionState
 					repeatingCloseBrackets = 1
+					prevCloseBracketIndex = i
 				}
-			}
-		case segmentEndDetectionState:
-			{
-				if template[i] != '}' || i == templateLen-1 {
-					delta := repeatingOpenBrackets - repeatingCloseBrackets
-					// 1. Handle brackets before parts with equal number of brackets
-					if delta > 0 {
-						// Write { delta times
-						for z := 0; z < delta; z++ {
+
+				// ????
+				if i == templateLen-1 {
+					state = segmentEndDetectionState
+				}
+			} else {
+				if state == segmentEndDetectionState {
+					if template[i] != '}' || i == templateLen-1 {
+						if i == templateLen-1 && template[i] == '}' {
+							if prevCloseBracketIndex != i {
+								repeatingCloseBrackets++
+							}
+						}
+						delta := repeatingOpenBrackets - repeatingCloseBrackets
+						// 1. Handle brackets before parts with equal number of brackets
+						if delta > 0 {
+							// Write { delta times
+							for z := 0; z < delta; z++ {
+								formattedStr.WriteByte('{')
+							}
+							j += delta
+						}
+						// 2. Handle segment {..{arg}..}  with equal number of brackets
+						// subStr := template[j:i]
+						// 2.1 Multiple curly brackets handler
+						isEven := (repeatingOpenBrackets % 2) == 0
+						// single - {argNumberStr} handles by replace argNumber by data from list. double {{argNumberStr}} produces {argNumberStr}
+						// triple - prof
+						segmentPrecedingBrackets := repeatingOpenBrackets / 2
+
+						if !isEven {
+							segmentPrecedingBrackets = (repeatingOpenBrackets - 1) / 2
+						}
+
+						for z := 0; z < segmentPrecedingBrackets; z++ {
 							formattedStr.WriteByte('{')
 						}
-						j += delta
-					}
-					// 2. Handle segment {..{arg}..}  with equal number of brackets
-					// subStr := template[j:i]
-					// 2.1 Multiple curly brackets handler
-					isEven := (repeatingOpenBrackets % 2) == 0
-					// single - {argNumberStr} handles by replace argNumber by data from list. double {{argNumberStr}} produces {argNumberStr}
-					// triple - prof
-					segmentPrecedingBrackets := repeatingOpenBrackets / 2
 
-					if !isEven {
-						segmentPrecedingBrackets = (repeatingOpenBrackets - 1) / 2
-					}
+						startIndex := j + repeatingOpenBrackets
+						endIndex := i - repeatingCloseBrackets
+						// don't like this, this is a shit
+						if /*startIndex == endIndex*/ i == templateLen-1 {
+							endIndex += 1
+						}
+						/*argSelStr := template[j:i]
+						if len(argSelStr) > 0 {
 
-					for z := 0; z < segmentPrecedingBrackets; z++ {
-						formattedStr.WriteByte('{')
-					}
+						}*/
+						argNumberStr := template[startIndex:endIndex]
 
-					argNumberStr := template[j+repeatingOpenBrackets : i-repeatingCloseBrackets]
-					// 2.2 Segment formatting
-					if !isEven {
-						j += repeatingOpenBrackets - 1
-						argNumber := -1
-						var err error
-						var argFormatOptions string
-						if len(argNumberStr) == 1 {
-							// this calculation makes work a little faster than AtoI
-							argNumber = int(argNumberStr[0] - '0')
-						} else {
-							argNumber = -1
-							// Here we are going to process argument either with additional formatting or not
-							// i.e. 0 for arg without formatting && 0:format for an argument wit formatting
-							// todo(UMV): we could format json or yaml here ...
-							formatOptionIndex := strings.Index(argNumberStr, argumentFormatSeparator)
-							// formatOptionIndex can't be == 0, because 0 is a position of arg number
-							if formatOptionIndex > 0 {
-								// trimmed was down later due to we could format list with space separator
-								argFormatOptions = argNumberStr[formatOptionIndex+1:]
-								argNumberStrPart := argNumberStr[:formatOptionIndex]
-								argNumber, err = strconv.Atoi(strings.Trim(argNumberStrPart, " "))
-								if err == nil {
-									argNumberStr = argNumberStrPart
+						// 2.2 Segment formatting
+						if !isEven {
+							j += repeatingOpenBrackets - 1
+							argNumber := -1
+							var err error
+							var argFormatOptions string
+							if len(argNumberStr) == 1 {
+								// this calculation makes work a little faster than AtoI
+								argNumber = int(argNumberStr[0] - '0')
+							} else {
+								argNumber = -1
+								// Here we are going to process argument either with additional formatting or not
+								// i.e. 0 for arg without formatting && 0:format for an argument wit formatting
+								// todo(UMV): we could format json or yaml here ...
+								formatOptionIndex := strings.Index(argNumberStr, argumentFormatSeparator)
+								// formatOptionIndex can't be == 0, because 0 is a position of arg number
+								if formatOptionIndex > 0 {
+									// trimmed was down later due to we could format list with space separator
+									argFormatOptions = argNumberStr[formatOptionIndex+1:]
+									argNumberStrPart := argNumberStr[:formatOptionIndex]
+									argNumber, err = strconv.Atoi(strings.Trim(argNumberStrPart, " "))
+									if err == nil {
+										argNumberStr = argNumberStrPart
+									}
+									// make formatting option str for further pass to an argument
 								}
-								// make formatting option str for further pass to an argument
+								//
+								if argNumber < 0 {
+									argNumber, err = strconv.Atoi(argNumberStr)
+								}
 							}
-							//
-							if argNumber < 0 {
-								argNumber, err = strconv.Atoi(argNumberStr)
-							}
-						}
 
-						if (err == nil || (argFormatOptions != "" && !repeatingOpenBracketsCollected /*&& !nestedBrackets*/)) &&
-							len(args) > argNumber {
-							// get number from placeholder
-							strVal := getItemAsStr(&args[argNumber], &argFormatOptions)
-							formattedStr.WriteString(strVal)
+							if (err == nil || (argFormatOptions != "" && !repeatingOpenBracketsCollected /*&& !nestedBrackets*/)) &&
+								len(args) > argNumber {
+								// get number from placeholder
+								strVal := getItemAsStr(&args[argNumber], &argFormatOptions)
+								formattedStr.WriteString(strVal)
+							} else {
+								if i < templateLen-1 {
+									formattedStr.WriteString(template[j:i])
+								} else {
+									// if i is the last symbol in template line, we should take i+1
+									formattedStr.WriteString(template[j : i+1]) //template
+								}
+
+							}
 						} else {
-							formattedStr.WriteString(template[j:i]) //template[i:j]
-							if i <= templateLen-1 {
-								formattedStr.WriteByte(template[j]) // template[j]
-							}
+							formattedStr.WriteString(argNumberStr)
 						}
+
+						for z := 0; z < segmentPrecedingBrackets; z++ {
+							formattedStr.WriteByte('}')
+						}
+
+						// 3. Handle brackets after segment
+						for z := 0; z < delta*-1; z++ {
+							formattedStr.WriteByte('}')
+						}
+
+						state = charAnalyzeState
+						if i == templateLen-1 {
+							// this is for write non formatted line from some index to templateLen-1
+							// but this should be a conditional thing, if we have segmentAtTheEnd, we shouldn't print here
+							break
+						} else {
+							j = i
+						}
+						repeatingOpenBrackets = 0
+						repeatingCloseBrackets = 0
 					} else {
-						formattedStr.WriteString(argNumberStr)
+						repeatingCloseBrackets++
+						prevCloseBracketIndex = i
 					}
-
-					for z := 0; z < segmentPrecedingBrackets; z++ {
-						formattedStr.WriteByte('}')
-					}
-
-					// 3. Handle brackets after segment
-					for z := 0; z < delta*-1; z++ {
-						formattedStr.WriteByte('}')
-					}
-
-					state = charAnalyzeState
-					// process current i ! it also could be {
-					if i == templateLen-1 {
-						j = 0
-					} else {
-						j = i
-					}
-					repeatingOpenBrackets = 0
-					repeatingCloseBrackets = 0
-				} else {
-					repeatingCloseBrackets++
 				}
 			}
 		}
+		if i < templateLen-1 {
+			i++
+		}
 	}
 
-	if j != 0 {
+	/*if j != 0 {
 		formattedStr.WriteString(template[j:])
-	}
+	}*/
 
 	return formattedStr.String()
 }

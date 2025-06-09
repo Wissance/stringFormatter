@@ -55,7 +55,7 @@ func TestFormat(t *testing.T) {
 		    }`,
 		},
 		"multiple nested curly brackets": {
-			template: `{"StartAt": "S0", "States": {"S0": {"Type": "Map" {0}, ` +
+			template: `{"StartAt": "S0", "States": {"S0": {"Type": "Map" , ` +
 				`"Iterator": {"StartAt": "SI0", "States": {"SI0": {"Type": "Pass", "End": true}}}` +
 				`, "End": true}}}`,
 			args:     []any{""},
