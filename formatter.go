@@ -246,14 +246,11 @@ func Format(template string, args ...any) string {
 				}
 			}
 		}
+		// sometimes we are using continue to move to another state within current i value
 		if i < templateLen-1 {
 			i++
 		}
 	}
-
-	/*if argDetected == true && template[templateLen-1] != '}' {
-		formattedStr.WriteByte(template[templateLen-1])
-	}*/
 
 	return formattedStr.String()
 }
