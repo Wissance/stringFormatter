@@ -50,7 +50,7 @@ func Format(template string, args ...any) string {
 	repeatingOpenBracketsCollected := false
 	repeatingCloseBrackets := 0
 	prevCloseBracketIndex := 0
-	// rawWrite := false
+	copyWithBrackets := false
 
 	formattedStr.WriteString(template[:start])
 	state := charAnalyzeState
@@ -116,7 +116,8 @@ func Format(template string, args ...any) string {
 								}
 							}
 						}
-						//rawWrite = true
+
+						copyWithBrackets = false
 						delta := repeatingOpenBrackets - repeatingCloseBrackets
 						// 1. Handle brackets before parts with equal number of brackets
 						if delta > 0 {
@@ -202,7 +203,7 @@ func Format(template string, args ...any) string {
 								strVal := getItemAsStr(&args[argNumber], &argFormatOptions)
 								formattedStr.WriteString(strVal)
 							} else {
-								//rawWrite = true
+								copyWithBrackets = true
 								if i < templateLen-1 {
 									formattedStr.WriteString(template[j:i])
 								} else {
@@ -220,8 +221,10 @@ func Format(template string, args ...any) string {
 						}
 
 						// 3. Handle brackets after segment
-						for z := 0; z < delta*-1; z++ {
-							formattedStr.WriteByte('}')
+						if !copyWithBrackets {
+							for z := 0; z < delta*-1; z++ {
+								formattedStr.WriteByte('}')
+							}
 						}
 
 						state = charAnalyzeState
