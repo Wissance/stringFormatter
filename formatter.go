@@ -50,6 +50,7 @@ func Format(template string, args ...any) string {
 	repeatingOpenBracketsCollected := false
 	repeatingCloseBrackets := 0
 	prevCloseBracketIndex := 0
+	// rawWrite := false
 
 	formattedStr.WriteString(template[:start])
 	state := charAnalyzeState
@@ -79,8 +80,11 @@ func Format(template string, args ...any) string {
 			if state == segmentBeginDetectionState {
 				// segment could be complicated:
 				if template[i] == '{' {
+					// we are not dealing with segment, if there are symbols between { and {
 					if template[i-1] != '{' {
 						state = charAnalyzeState
+						// skip increment i, process in charAnalyzeState
+						continue
 					}
 					if !repeatingOpenBracketsCollected {
 						repeatingOpenBrackets++
@@ -96,18 +100,23 @@ func Format(template string, args ...any) string {
 					prevCloseBracketIndex = i
 				}
 
-				// ????
+				// we started to detect, but not finished yet
 				if i == templateLen-1 {
 					state = segmentEndDetectionState
 				}
 			} else {
 				if state == segmentEndDetectionState {
-					if template[i] != '}' || i == templateLen-1 {
-						if i == templateLen-1 && template[i] == '}' {
-							if prevCloseBracketIndex != i {
-								repeatingCloseBrackets++
+					if template[i] != '}' || // end of the segment
+						i == templateLen-1 { // end of the line
+						if i == templateLen-1 {
+							// we didn't process close bracket symbol in previous states, or in this state in diff branch
+							if template[i] == '}' {
+								if prevCloseBracketIndex != i {
+									repeatingCloseBrackets++
+								}
 							}
 						}
+						//rawWrite = true
 						delta := repeatingOpenBrackets - repeatingCloseBrackets
 						// 1. Handle brackets before parts with equal number of brackets
 						if delta > 0 {
@@ -118,7 +127,6 @@ func Format(template string, args ...any) string {
 							j += delta
 						}
 						// 2. Handle segment {..{arg}..}  with equal number of brackets
-						// subStr := template[j:i]
 						// 2.1 Multiple curly brackets handler
 						isEven := (repeatingOpenBrackets % 2) == 0
 						// single - {argNumberStr} handles by replace argNumber by data from list. double {{argNumberStr}} produces {argNumberStr}
@@ -136,14 +144,20 @@ func Format(template string, args ...any) string {
 						startIndex := j + repeatingOpenBrackets
 						endIndex := i - repeatingCloseBrackets
 						// don't like this, this is a shit
-						if /*startIndex == endIndex*/ i == templateLen-1 {
-							endIndex += 1
+						if i == templateLen-1 {
+							// we add endIndex +1 because selection at the mid of template line assumes that
+							// processes segment at the next symbol i+1, but at the end of line we can't process i+1
+							// therefore we manipulate selection indexes but ONLY in case when segment at the end of template
+							if !(repeatingOpenBrackets > 0 && template[templateLen-1] != '}') {
+								endIndex += 1
+							}
 						}
-						/*argSelStr := template[j:i]
-						if len(argSelStr) > 0 {
-
-						}*/
 						argNumberStr := template[startIndex:endIndex]
+
+						selection := template[j:i]
+						if len(selection) > 0 {
+
+						}
 
 						// 2.2 Segment formatting
 						if !isEven {
@@ -154,6 +168,7 @@ func Format(template string, args ...any) string {
 							if len(argNumberStr) == 1 {
 								// this calculation makes work a little faster than AtoI
 								argNumber = int(argNumberStr[0] - '0')
+								//rawWrite = false
 							} else {
 								argNumber = -1
 								// Here we are going to process argument either with additional formatting or not
@@ -168,21 +183,26 @@ func Format(template string, args ...any) string {
 									argNumber, err = strconv.Atoi(strings.Trim(argNumberStrPart, " "))
 									if err == nil {
 										argNumberStr = argNumberStrPart
+										//rawWrite = false
 									}
+
 									// make formatting option str for further pass to an argument
 								}
-								//
 								if argNumber < 0 {
 									argNumber, err = strconv.Atoi(argNumberStr)
+									if err == nil {
+										//rawWrite = false
+									}
 								}
 							}
 
-							if (err == nil || (argFormatOptions != "" && !repeatingOpenBracketsCollected /*&& !nestedBrackets*/)) &&
+							if (err == nil || (argFormatOptions != "" && !repeatingOpenBracketsCollected)) &&
 								len(args) > argNumber {
 								// get number from placeholder
 								strVal := getItemAsStr(&args[argNumber], &argFormatOptions)
 								formattedStr.WriteString(strVal)
 							} else {
+								//rawWrite = true
 								if i < templateLen-1 {
 									formattedStr.WriteString(template[j:i])
 								} else {
@@ -206,8 +226,10 @@ func Format(template string, args ...any) string {
 
 						state = charAnalyzeState
 						if i == templateLen-1 {
-							// this is for write non formatted line from some index to templateLen-1
-							// but this should be a conditional thing, if we have segmentAtTheEnd, we shouldn't print here
+							// this is for writing last symbol that follows after segment at the end of template
+							if endIndex < templateLen-1 && template[templateLen-1] != '}' {
+								formattedStr.WriteByte(template[templateLen-1])
+							}
 							break
 						} else {
 							j = i
@@ -226,8 +248,8 @@ func Format(template string, args ...any) string {
 		}
 	}
 
-	/*if j != 0 {
-		formattedStr.WriteString(template[j:])
+	/*if argDetected == true && template[templateLen-1] != '}' {
+		formattedStr.WriteByte(template[templateLen-1])
 	}*/
 
 	return formattedStr.String()
