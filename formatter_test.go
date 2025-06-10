@@ -175,6 +175,16 @@ func TestFormat(t *testing.T) {
 			args:     []any{},
 			expected: "{x}",
 		},
+		"one symb template": {
+			template: "{",
+			args:     []any{},
+			expected: "{",
+		},
+		"one symb template2": {
+			template: "}",
+			args:     []any{},
+			expected: "}",
+		},
 	} {
 		t.Run(name, func(t *testing.T) {
 			assert.Equal(t, test.expected, stringFormatter.Format(test.template, test.args...))
