@@ -367,7 +367,7 @@ func TestFormatComplex(t *testing.T) {
 			expected: "[]any{singleValue}",
 		},
 		"code line with interface with val": {
-			template: "[]any{{val}}",
+			template: "[]any{{{val}}}",
 			args:     map[string]any{"val": "\"USSR!\""},
 			expected: "[]any{\"USSR!\"}",
 		},
