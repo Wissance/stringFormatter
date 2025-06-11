@@ -382,11 +382,6 @@ func FormatComplex(template string, args map[string]any) string {
 						argKeyStr := template[startIndex:endIndex]
 						argKey := argKeyStr
 
-						selection := template[j:i]
-						if len(selection) > 0 {
-
-						}
-
 						// 2.2 Segment formatting
 						if !isEven {
 							j += repeatingOpenBrackets - 1

@@ -371,6 +371,26 @@ func TestFormatComplex(t *testing.T) {
 			args:     map[string]any{"val": "\"USSR!\""},
 			expected: "[]any{\"USSR!\"}",
 		},
+		"2-symb str": {
+			template: "a}",
+			args:     map[string]any{},
+			expected: "a}",
+		},
+		"one symb segment": {
+			template: "{x}",
+			args:     map[string]any{},
+			expected: "{x}",
+		},
+		"one symb template": {
+			template: "{",
+			args:     map[string]any{},
+			expected: "{",
+		},
+		"one symb template2": {
+			template: "}",
+			args:     map[string]any{},
+			expected: "}",
+		},
 	} {
 		t.Run(name, func(t *testing.T) {
 			assert.Equal(t, test.expected, stringFormatter.FormatComplex(test.template, test.args))
