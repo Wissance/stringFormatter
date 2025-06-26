@@ -55,7 +55,7 @@ func TestFormat(t *testing.T) {
 		    }`,
 		},
 		"multiple nested curly brackets": {
-			template: `{"StartAt": "S0", "States": {"S0": {"Type": "Map" {0}, ` +
+			template: `{"StartAt": "S0", "States": {"S0": {"Type": "Map" , ` +
 				`"Iterator": {"StartAt": "SI0", "States": {"SI0": {"Type": "Pass", "End": true}}}` +
 				`, "End": true}}}`,
 			args:     []any{""},
@@ -100,6 +100,11 @@ func TestFormat(t *testing.T) {
 			template: "At the end {{0}}",
 			args:     []any{"s"},
 			expected: "At the end {0}",
+		},
+		"quadro curly brackets in the middle": {
+			template: "Not at the end {{{{0}}}}, in the middle",
+			args:     []any{"s"},
+			expected: "Not at the end {{0}}, in the middle",
 		},
 		"struct arg": {
 			template: "Example is: {0}",
@@ -149,6 +154,36 @@ func TestFormat(t *testing.T) {
 			template: "in the middle - { at the end - nothing",
 			args:     []any{},
 			expected: "in the middle - { at the end - nothing",
+		},
+		"code line with interface": {
+			template: "[]any{singleValue}",
+			args:     []any{},
+			expected: "[]any{singleValue}",
+		},
+		"code line with interface with val": {
+			template: "[]any{{{0}}}",
+			args:     []any{"\"USSR!\""},
+			expected: "[]any{\"USSR!\"}",
+		},
+		"2-symb str": {
+			template: "a}",
+			args:     []any{},
+			expected: "a}",
+		},
+		"one symb segment": {
+			template: "{x}",
+			args:     []any{},
+			expected: "{x}",
+		},
+		"one symb template": {
+			template: "{",
+			args:     []any{},
+			expected: "{",
+		},
+		"one symb template2": {
+			template: "}",
+			args:     []any{},
+			expected: "}",
 		},
 	} {
 		t.Run(name, func(t *testing.T) {
@@ -325,6 +360,36 @@ func TestFormatComplex(t *testing.T) {
 			template: "switch app.appConfig.ServerCfg.Schema { //nolint:exhaustive",
 			args:     map[string]any{},
 			expected: "switch app.appConfig.ServerCfg.Schema { //nolint:exhaustive",
+		},
+		"code line with interface": {
+			template: "[]any{singleValue}",
+			args:     map[string]any{},
+			expected: "[]any{singleValue}",
+		},
+		"code line with interface with val": {
+			template: "[]any{{{val}}}",
+			args:     map[string]any{"val": "\"USSR!\""},
+			expected: "[]any{\"USSR!\"}",
+		},
+		"2-symb str": {
+			template: "a}",
+			args:     map[string]any{},
+			expected: "a}",
+		},
+		"one symb segment": {
+			template: "{x}",
+			args:     map[string]any{},
+			expected: "{x}",
+		},
+		"one symb template": {
+			template: "{",
+			args:     map[string]any{},
+			expected: "{",
+		},
+		"one symb template2": {
+			template: "}",
+			args:     map[string]any{},
+			expected: "}",
 		},
 	} {
 		t.Run(name, func(t *testing.T) {
