@@ -1,20 +1,21 @@
 package stringFormatter
 
 import (
+	"strings"
 	"unicode"
 )
 
 type FormattingStyle string
 
 const (
-	NoFormatting FormattingStyle = "no_formatting"
-	Camel        FormattingStyle = "camel"
-	Snake        FormattingStyle = "snake"
-	Kebab        FormattingStyle = "kebab"
+	Camel FormattingStyle = "camel"
+	Snake FormattingStyle = "snake"
+	Kebab FormattingStyle = "kebab"
 )
 
-type styleStats struct {
-	SignIndexes []int
+type styleInc struct {
+	Index int
+	Style FormattingStyle
 }
 
 var styles = map[rune]FormattingStyle{
@@ -23,10 +24,42 @@ var styles = map[rune]FormattingStyle{
 }
 
 func SetStyle(text *string, style FormattingStyle) string {
-	// 1. Slice text by spaces and prepare every item separately
-	// 2. Find style marker (_, -, or transition lowerUpper)
-	// 3. Convert
-	return ""
+	if text == nil {
+		return ""
+	}
+	sb := strings.Builder{}
+	sb.Grow(len(*text))
+	stats := defineFormattingStyle(text)
+	startIndex := 0
+	// todo UMV think how to process ....
+	// we could have many stats at the same time, probably we should use some config in the future
+	// iterate over the map
+	for _, v := range stats {
+		sb.WriteString((*text)[startIndex : v.Index-1])
+		if style == v.Style {
+			sb.WriteString((*text)[:v.Index])
+			startIndex = v.Index
+		} else {
+			switch style {
+			case Kebab:
+				sb.WriteString("-")
+				break
+			case Snake:
+				sb.WriteString("_")
+				break
+			case Camel:
+				sb.WriteRune(unicode.ToUpper(rune((*text)[v.Index])))
+				break
+			}
+			startIndex += 1
+		}
+
+	}
+	sb.WriteString((*text)[startIndex:])
+	if style != Camel {
+		return strings.ToLower(sb.String())
+	}
+	return sb.String()
 }
 
 // defineFormattingStyle
@@ -38,13 +71,9 @@ func SetStyle(text *string, style FormattingStyle) string {
  *    - text - a sequence of symbols to check
  * Returns: formatting style using in the text
  */
-func defineFormattingStyle(text *string) map[FormattingStyle]styleStats {
+func defineFormattingStyle(text *string) []styleInc {
 	// symbol analyze, for camel case pattern -> aA, for kebab -> a-a, for snake -> a_a
-	var stats map[FormattingStyle]styleStats = map[FormattingStyle]styleStats{
-		Kebab: styleStats{},
-		Snake: styleStats{},
-		Camel: styleStats{},
-	}
+	inclusions := make([]styleInc, 0)
 	runes := []rune(*text)
 	for pos, char := range runes {
 		// define style and add stats
@@ -60,13 +89,9 @@ func defineFormattingStyle(text *string) map[FormattingStyle]styleStats {
 				}
 			}
 		}
-		if style != NoFormatting {
-			// unfortunately copy and create new value in the map :(
-			newStats := append(stats[style].SignIndexes, pos)
-			stats[style] = styleStats{SignIndexes: newStats}
-		}
+		inclusions = append(inclusions, styleInc{Index: pos, Style: style})
 	}
-	return stats
+	return inclusions
 }
 
 func isUpper(symbol rune) bool {
