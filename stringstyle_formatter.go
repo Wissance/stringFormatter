@@ -35,10 +35,10 @@ func SetStyle(text *string, style FormattingStyle) string {
 	// we could have many stats at the same time, probably we should use some config in the future
 	// iterate over the map
 	for _, v := range stats {
-		sb.WriteString((*text)[startIndex : v.Index-1])
+		sb.WriteString((*text)[startIndex:v.Index])
+		startIndex = v.Index
 		if style == v.Style {
 			sb.WriteString((*text)[:v.Index])
-			startIndex = v.Index
 		} else {
 			switch style {
 			case Kebab:
@@ -49,6 +49,7 @@ func SetStyle(text *string, style FormattingStyle) string {
 				break
 			case Camel:
 				sb.WriteRune(unicode.ToUpper(rune((*text)[v.Index])))
+				sb.WriteRune(unicode.ToUpper(rune((*text)[v.Index+1])))
 				break
 			}
 			startIndex += 1
@@ -89,7 +90,9 @@ func defineFormattingStyle(text *string) []styleInc {
 				}
 			}
 		}
-		inclusions = append(inclusions, styleInc{Index: pos, Style: style})
+		if style != "" {
+			inclusions = append(inclusions, styleInc{Index: pos, Style: style})
+		}
 	}
 	return inclusions
 }
