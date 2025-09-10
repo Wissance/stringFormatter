@@ -31,14 +31,16 @@ func SetStyle(text *string, style FormattingStyle) string {
 	sb.Grow(len(*text))
 	stats := defineFormattingStyle(text)
 	startIndex := 0
+	endIndex := 0
 	// todo UMV think how to process ....
 	// we could have many stats at the same time, probably we should use some config in the future
 	// iterate over the map
 	for _, v := range stats {
-		sb.WriteString((*text)[startIndex:v.Index])
+		endIndex = v.Index
+		sb.WriteString((*text)[startIndex:endIndex])
 		startIndex = v.Index
 		if style == v.Style {
-			sb.WriteString((*text)[:v.Index])
+			sb.WriteString((*text)[:endIndex])
 		} else {
 			switch style {
 			case Kebab:
@@ -48,8 +50,9 @@ func SetStyle(text *string, style FormattingStyle) string {
 				sb.WriteString("_")
 				break
 			case Camel:
-				sb.WriteRune(unicode.ToUpper(rune((*text)[v.Index])))
-				sb.WriteRune(unicode.ToUpper(rune((*text)[v.Index+1])))
+				// in case of convert to Camel we should skip v.Index (because it is _ or -)
+				sb.WriteRune(unicode.ToUpper(rune((*text)[endIndex+1])))
+				startIndex += 1
 				break
 			}
 			startIndex += 1
