@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestDefineFormattingStyle(t *testing.T) {
+func TestSetFormattingStyle(t *testing.T) {
 	for name, test := range map[string]struct {
 		text     string
 		expected string
@@ -30,6 +30,16 @@ func TestDefineFormattingStyle(t *testing.T) {
 		"snake-to-camel-simple": {
 			text:     "my_super_func",
 			expected: "mySuperFunc",
+			newStyle: stringFormatter.Camel,
+		},
+		"camel-to-snake-with-underscore-the-end": {
+			text:     "myVal_",
+			expected: "my_val_",
+			newStyle: stringFormatter.Snake,
+		},
+		"mixed-to-camel-simple": {
+			text:     "TestGetManyMethod_WithDefaultParams",
+			expected: "TestGetManyMethodWithDefaultParams",
 			newStyle: stringFormatter.Camel,
 		},
 	} {

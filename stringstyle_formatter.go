@@ -37,27 +37,32 @@ func SetStyle(text *string, style FormattingStyle) string {
 	// iterate over the map
 	for _, v := range stats {
 		endIndex = v.Index
+		if endIndex < startIndex {
+			continue
+		}
 		sb.WriteString((*text)[startIndex:endIndex])
 		startIndex = v.Index
-		if style == v.Style {
-			sb.WriteString((*text)[:endIndex])
-		} else {
-			switch style {
-			case Kebab:
-				sb.WriteString("-")
-				break
-			case Snake:
-				sb.WriteString("_")
-				break
-			case Camel:
-				// in case of convert to Camel we should skip v.Index (because it is _ or -)
+
+		switch style {
+		case Kebab:
+			sb.WriteString("-")
+			break
+		case Snake:
+			sb.WriteString("_")
+			break
+		case Camel:
+			// in case of convert to Camel we should skip v.Index (because it is _ or -)
+			if v.Style == Camel {
+				sb.WriteRune(unicode.ToUpper(rune((*text)[endIndex])))
+			} else {
 				sb.WriteRune(unicode.ToUpper(rune((*text)[endIndex+1])))
-				startIndex += 1
-				break
 			}
 			startIndex += 1
+			break
 		}
-
+		if v.Style != Camel {
+			startIndex += 1
+		}
 	}
 	sb.WriteString((*text)[startIndex:])
 	if style != Camel {
@@ -88,7 +93,7 @@ func defineFormattingStyle(text *string) []styleInc {
 				charIsUpperCase := isUpper(char)
 				prevChar := runes[pos-1]
 				prevCharIsUpperCase := unicode.IsUpper(prevChar)
-				if charIsUpperCase != prevCharIsUpperCase {
+				if charIsUpperCase && !prevCharIsUpperCase {
 					style = Camel
 				}
 			}
