@@ -42,6 +42,16 @@ func TestSetFormattingStyle(t *testing.T) {
 			expected: "TestGetManyMethodWithDefaultParams",
 			newStyle: stringFormatter.Camel,
 		},
+		"no-changes-simple": {
+			text:     "_my_variable",
+			expected: "_my_variable",
+			newStyle: stringFormatter.Snake,
+		},
+		"snake_to_camel_with_underscore_at_start": {
+			text:     "_my_variable",
+			expected: "MyVariable",
+			newStyle: stringFormatter.Camel,
+		},
 	} {
 		t.Run(name, func(t *testing.T) {
 			actual := stringFormatter.SetStyle(&test.text, test.newStyle)
