@@ -111,10 +111,15 @@ func SetStyle(text *string, style FormattingStyle, firstSymbol CaseSetting, text
 		return strings.ToLower(sb.String()[:1]) + result.String()
 	case NoChanges:
 		return sb.String()[:1] + result.String()
+	default:
+		return sb.String()[:1] + result.String()
 	}
-	return ""
 }
 
+// GetFormattingStyleOptions function that defines formatting style, case of first char and result from string
+/*
+ *
+ */
 func GetFormattingStyleOptions(style string) (FormattingStyle, CaseSetting, CaseSetting) {
 	styleLower := strings.ToLower(style)
 	var formattingStyle FormattingStyle
@@ -139,7 +144,12 @@ func GetFormattingStyleOptions(style string) (FormattingStyle, CaseSetting, Case
 	}
 
 	if formattingStyle != Camel {
-
+		allSymbolsUpperCase := isStringIsUpper(runes)
+		if allSymbolsUpperCase {
+			textCase = ToUpper
+		} else {
+			textCase = ToLower
+		}
 	}
 
 	return formattingStyle, firstSymbolCase, textCase

@@ -103,3 +103,44 @@ func TestSetFormattingStyleWithCaseModification(t *testing.T) {
 		})
 	}
 }
+
+func TestGetFormattingStyleOptions(t *testing.T) {
+	for name, test := range map[string]struct {
+		style                   string
+		expectedStyle           stringFormatter.FormattingStyle
+		expectedFirstSymbolCase stringFormatter.CaseSetting
+		expectedTextCase        stringFormatter.CaseSetting
+	}{
+		"snake-lower-case-style": {
+			style:                   "snake",
+			expectedStyle:           stringFormatter.Snake,
+			expectedFirstSymbolCase: stringFormatter.ToLower,
+			expectedTextCase:        stringFormatter.ToLower,
+		},
+		"snake-upper-case-style": {
+			style:                   "SNAKE",
+			expectedStyle:           stringFormatter.Snake,
+			expectedFirstSymbolCase: stringFormatter.ToUpper,
+			expectedTextCase:        stringFormatter.ToUpper,
+		},
+		"kebab-lower-case-style": {
+			style:                   "kebab",
+			expectedStyle:           stringFormatter.Kebab,
+			expectedFirstSymbolCase: stringFormatter.ToLower,
+			expectedTextCase:        stringFormatter.ToLower,
+		},
+		"kebab-upper-case-style": {
+			style:                   "KEBAB",
+			expectedStyle:           stringFormatter.Kebab,
+			expectedFirstSymbolCase: stringFormatter.ToUpper,
+			expectedTextCase:        stringFormatter.ToUpper,
+		},
+	} {
+		t.Run(name, func(t *testing.T) {
+			actualStyle, actualFirstSymbolCase, actualTextCase := stringFormatter.GetFormattingStyleOptions(test.style)
+			assert.Equal(t, test.expectedStyle, actualStyle)
+			assert.Equal(t, test.expectedFirstSymbolCase, actualFirstSymbolCase)
+			assert.Equal(t, test.expectedTextCase, actualTextCase)
+		})
+	}
+}
