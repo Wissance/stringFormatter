@@ -67,5 +67,39 @@ func TestSetFormattingStyleWithoutCaseModification(t *testing.T) {
 }
 
 func TestSetFormattingStyleWithCaseModification(t *testing.T) {
-	
+	for name, test := range map[string]struct {
+		text            string
+		expected        string
+		newStyle        stringFormatter.FormattingStyle
+		firstSymbolCase stringFormatter.CaseSetting
+		textCase        stringFormatter.CaseSetting
+	}{
+		"snake-to-kebab-upper-case": {
+			text:            "my_super_func",
+			expected:        "MY-SUPER-FUNC",
+			newStyle:        stringFormatter.Kebab,
+			firstSymbolCase: stringFormatter.ToUpper,
+			textCase:        stringFormatter.ToUpper,
+		},
+		"snake-to-camel-starting-from-lower-case": {
+			text:            "my_super_func",
+			expected:        "mySuperFunc",
+			newStyle:        stringFormatter.Camel,
+			firstSymbolCase: stringFormatter.ToLower,
+			textCase:        stringFormatter.NoChanges,
+		},
+		"camel-to-upper-case-snake": {
+			text:            "mySuperFunc",
+			expected:        "MY_SUPER_FUNC",
+			newStyle:        stringFormatter.Snake,
+			firstSymbolCase: stringFormatter.ToUpper,
+			textCase:        stringFormatter.ToUpper,
+		},
+	} {
+		t.Run(name, func(t *testing.T) {
+			actual := stringFormatter.SetStyle(&test.text, test.newStyle, test.firstSymbolCase,
+				test.textCase)
+			assert.Equal(t, test.expected, actual)
+		})
+	}
 }
