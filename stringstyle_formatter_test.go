@@ -52,6 +52,11 @@ func TestSetFormattingStyle(t *testing.T) {
 			expected: "MyVariable",
 			newStyle: stringFormatter.Camel,
 		},
+		"camel-with_abbreviation-to-snake": {
+			text:     "convertToJSON",
+			expected: "convert_to_json",
+			newStyle: stringFormatter.Snake,
+		},
 	} {
 		t.Run(name, func(t *testing.T) {
 			actual := stringFormatter.SetStyle(&test.text, test.newStyle)
