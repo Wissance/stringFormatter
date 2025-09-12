@@ -65,3 +65,7 @@ func TestSetFormattingStyleWithoutCaseModification(t *testing.T) {
 		})
 	}
 }
+
+func TestSetFormattingStyleWithCaseModification(t *testing.T) {
+	
+}
