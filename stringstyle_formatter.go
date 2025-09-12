@@ -25,7 +25,7 @@ type styleInc struct {
 	Style FormattingStyle
 }
 
-var styles = map[rune]FormattingStyle{
+var styleSigns = map[rune]FormattingStyle{
 	'_': Snake,
 	'-': Kebab,
 }
@@ -115,6 +115,36 @@ func SetStyle(text *string, style FormattingStyle, firstSymbol CaseSetting, text
 	return ""
 }
 
+func GetFormattingStyleOptions(style string) (FormattingStyle, CaseSetting, CaseSetting) {
+	styleLower := strings.ToLower(style)
+	var formattingStyle FormattingStyle
+	firstSymbolCase := ToLower
+	textCase := NoChanges
+	switch styleLower {
+	case string(Camel):
+		formattingStyle = Camel
+		break
+	case string(Snake):
+		formattingStyle = Snake
+		break
+	case string(Kebab):
+		formattingStyle = Kebab
+		break
+	}
+
+	runes := []rune(style)
+	firstSymbolIsUpper := isSymbolIsUpper(runes[0])
+	if firstSymbolIsUpper {
+		firstSymbolCase = ToUpper
+	}
+
+	if formattingStyle != Camel {
+
+	}
+
+	return formattingStyle, firstSymbolCase, textCase
+}
+
 // defineFormattingStyle
 /* This function defines what formatting style is using in text
  * If there are no transitions between symbols then here we have NoFormatting style
@@ -130,11 +160,11 @@ func defineFormattingStyle(text *string) []styleInc {
 	runes := []rune(*text)
 	for pos, char := range runes {
 		// define style and add stats
-		style, ok := styles[char]
+		style, ok := styleSigns[char]
 		if !ok {
 			// 1. Probably current symbol is not a sign and we should continue
 			if pos > 0 && pos < len(runes)-1 {
-				charIsUpperCase := isUpper(char)
+				charIsUpperCase := isSymbolIsUpper(char)
 				prevChar := runes[pos-1]
 				prevCharIsUpperCase := unicode.IsUpper(prevChar)
 				if charIsUpperCase && !prevCharIsUpperCase {
@@ -149,6 +179,16 @@ func defineFormattingStyle(text *string) []styleInc {
 	return inclusions
 }
 
-func isUpper(symbol rune) bool {
+func isSymbolIsUpper(symbol rune) bool {
 	return unicode.IsUpper(symbol) && unicode.IsLetter(symbol)
+}
+
+func isStringIsUpper(str []rune) bool {
+	isUpper := true
+	for _, r := range str {
+		if unicode.IsLetter(r) {
+			isUpper = isUpper && unicode.IsUpper(r)
+		}
+	}
+	return isUpper
 }
