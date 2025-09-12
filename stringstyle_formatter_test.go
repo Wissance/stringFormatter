@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestSetFormattingStyle(t *testing.T) {
+func TestSetFormattingStyleWithoutCaseModification(t *testing.T) {
 	for name, test := range map[string]struct {
 		text     string
 		expected string
@@ -24,7 +24,7 @@ func TestSetFormattingStyle(t *testing.T) {
 		},
 		"lower-case-camel-to-snake-simple": {
 			text:     "mySuperFunc",
-			expected: "my_super_func",
+			expected: "my_Super_Func",
 			newStyle: stringFormatter.Snake,
 		},
 		"snake-to-camel-simple": {
@@ -34,7 +34,7 @@ func TestSetFormattingStyle(t *testing.T) {
 		},
 		"camel-to-snake-with-underscore-the-end": {
 			text:     "myVal_",
-			expected: "my_val_",
+			expected: "my_Val_",
 			newStyle: stringFormatter.Snake,
 		},
 		"mixed-to-camel-simple": {
@@ -54,12 +54,13 @@ func TestSetFormattingStyle(t *testing.T) {
 		},
 		"camel-with_abbreviation-to-snake": {
 			text:     "convertToJSON",
-			expected: "convert_to_json",
+			expected: "convert_To_JSON",
 			newStyle: stringFormatter.Snake,
 		},
 	} {
 		t.Run(name, func(t *testing.T) {
-			actual := stringFormatter.SetStyle(&test.text, test.newStyle)
+			actual := stringFormatter.SetStyle(&test.text, test.newStyle, stringFormatter.NoChanges,
+				stringFormatter.NoChanges)
 			assert.Equal(t, test.expected, actual)
 		})
 	}

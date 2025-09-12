@@ -6,11 +6,18 @@ import (
 )
 
 type FormattingStyle string
+type CaseSetting int
 
 const (
 	Camel FormattingStyle = "camel"
 	Snake FormattingStyle = "snake"
 	Kebab FormattingStyle = "kebab"
+)
+
+const (
+	ToUpper   CaseSetting = 1
+	ToLower   CaseSetting = 2
+	NoChanges CaseSetting = 3
 )
 
 type styleInc struct {
@@ -23,7 +30,22 @@ var styles = map[rune]FormattingStyle{
 	'-': Kebab,
 }
 
-func SetStyle(text *string, style FormattingStyle) string {
+// SetStyle is a function that converts text with code to defined code style.
+/* Set text like a code style to on from FormattingStyle (Camel, Snake, or Kebab)
+ * conversion of abbreviations like JSON, USB, and so on is going like a regular text
+ * for current version, therefore they these abbreviations could be in a different
+ * case after conversion.
+ * Case settings apply in the following order : 1 - textCase, 2 - firstSymbol.
+ * If you are not applying textCase to text converting from Camel to Snake or Kebab
+ * result is lower case styled text. textCase does not apply to Camel style.
+ * Parameters:
+ * - text - pointer to text
+ * - style - new code style
+ * - firstSymbol - case settings for first symbol
+ * - textCase - case settings for whole text except first symbol
+ * Returns : new string with formatted line
+ */
+func SetStyle(text *string, style FormattingStyle, firstSymbol CaseSetting, textCase CaseSetting) string {
 	if text == nil {
 		return ""
 	}
@@ -65,10 +87,32 @@ func SetStyle(text *string, style FormattingStyle) string {
 		}
 	}
 	sb.WriteString((*text)[startIndex:])
+	result := strings.Builder{}
 	if style != Camel {
-		return strings.ToLower(sb.String())
+		switch textCase {
+		case ToUpper:
+			result.WriteString(strings.ToUpper(sb.String()[1:]))
+			break
+		case ToLower:
+			result.WriteString(strings.ToLower(sb.String()[1:]))
+			break
+		case NoChanges:
+			result.WriteString(sb.String()[1:])
+			break
+		}
+	} else {
+		result.WriteString(sb.String()[1:])
 	}
-	return sb.String()
+
+	switch firstSymbol {
+	case ToUpper:
+		return strings.ToUpper(sb.String()[:1]) + result.String()
+	case ToLower:
+		return strings.ToLower(sb.String()[:1]) + result.String()
+	case NoChanges:
+		return sb.String()[:1] + result.String()
+	}
+	return ""
 }
 
 // defineFormattingStyle
