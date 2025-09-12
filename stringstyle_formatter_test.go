@@ -135,6 +135,18 @@ func TestGetFormattingStyleOptions(t *testing.T) {
 			expectedFirstSymbolCase: stringFormatter.ToUpper,
 			expectedTextCase:        stringFormatter.ToUpper,
 		},
+		"camel-lower-case-style": {
+			style:                   "camel",
+			expectedStyle:           stringFormatter.Camel,
+			expectedFirstSymbolCase: stringFormatter.ToLower,
+			expectedTextCase:        stringFormatter.NoChanges,
+		},
+		"camel-upper-case-style": {
+			style:                   "Camel",
+			expectedStyle:           stringFormatter.Camel,
+			expectedFirstSymbolCase: stringFormatter.ToUpper,
+			expectedTextCase:        stringFormatter.NoChanges,
+		},
 	} {
 		t.Run(name, func(t *testing.T) {
 			actualStyle, actualFirstSymbolCase, actualTextCase := stringFormatter.GetFormattingStyleOptions(test.style)
