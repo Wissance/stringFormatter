@@ -407,7 +407,7 @@ func FormatComplex(template string, args map[string]any) string {
 
 								arg, ok = args[argKey]
 							}
-							if ok || (argFormatOptions != "" && !!repeatingOpenBracketsCollected) {
+							if ok || argFormatOptions != "" {
 								// get number from placeholder
 								strVal := ""
 								if arg != nil {
