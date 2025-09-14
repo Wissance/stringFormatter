@@ -575,6 +575,21 @@ func getItemAsStr(item *any, itemFormat *string) string {
 			} else {
 				return convertSliceToStrWithTypeDiscover(item, &separator)
 			}
+		case 'c', 'C':
+			// c means code for apply stringFormatter.SetStyle()
+			/* code formatting could be set as follows:
+			 * 1. {0:c:Camel} - stands for camel case with Capital letter at begin
+			 * 2. {0:c:camel} - stands for camel case with Capital letter at begin
+			 * 3. {0:c:Kebab}, {0:c:kebab}, {0:c:KEBAB} - 3 ways of Kebab formatting: first lower case with start Capital letter
+			 * 4. {0:c:Snake}, {0:c:snake}, {0:c:SNAKE} - 3 ways of Snake formatting: first lower case with start Capital letter
+			 */
+			formatSubParts := strings.Split(*itemFormat, ":")
+			if len(formatSubParts) > 1 {
+				format, firstSymbolCase, textCase := GetFormattingStyleOptions(formatSubParts[1])
+				val := (*item).([]interface{})
+				itemStr := val[0].(string)
+				return SetStyle(&itemStr, format, firstSymbolCase, textCase)
+			}
 		default:
 			base = 10
 		}

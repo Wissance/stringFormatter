@@ -1,7 +1,8 @@
 # StringFormatter
 
-A set of a ***high performance string tools*** that helps to build strings from templates and process text faster than with `fmt`!!!.
-Slice printing is **50% faster with 8 items** slice and **250% with 20 items** slice 
+* A set of a ***high performance string tools*** that helps to build strings from templates and process text faster than with `fmt`!!!.
+* Allows to **format code in appropriate style** (`Snake`, `Kebab`, `Camel`) and case.
+* Slice printing is **50% faster with 8 items** slice and **250% with 20 items** slice 
 
 ![GitHub go.mod Go version (subdirectory of monorepo)](https://img.shields.io/github/go-mod/go-version/wissance/stringFormatter?style=plastic) 
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/wissance/stringFormatter?style=plastic) 
@@ -17,6 +18,8 @@ Slice printing is **50% faster with 8 items** slice and **250% with 20 items** s
 ![String Formatter: a convenient string formatting tool](img/benchmarks_adv.png)
 2. Additional text utilities:
    - convert ***map to string*** using one of predefined formats (see `text_utils.go`)
+3. Code Style formatting utilities
+   - convert `snake`/`kebab`/`camel` programming code to each other and vice versa (see `stringstyle_formatter.go`).
 
 ### 1. Text formatting from templates
 
@@ -80,6 +83,12 @@ For more convenient lines formatting we should choose how arguments are represen
 6. Lists
    - `{0:L-}, [1,2,3] outputs -> 1-2-3`
    - `{0:L, }, [1,2,3] outputs -> 1, 2, 3`
+7. Code
+   - `{0:c:snake}, myFunc outputs -> my_func`
+   - `{0:c:Snake}, myFunc outputs -> My_func`
+   - `{0:c:SNAKE}, read-timeout outputs -> READ_TIMEOUT`
+   - `{0:c:camel}, my_variable outputs -> myVariable`
+   - `{0:c:Camel}, my_variable outputs -> MyVariable`
 
 ##### 1.2.4 Benchmarks of the Format and FormatComplex functions
 
