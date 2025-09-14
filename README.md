@@ -8,7 +8,7 @@
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/wissance/stringFormatter?style=plastic) 
 ![GitHub issues](https://img.shields.io/github/issues/wissance/stringFormatter?style=plastic)
 ![GitHub Release Date](https://img.shields.io/github/release-date/wissance/stringFormatter) 
-![GitHub release (latest by date)](https://img.shields.io/github/downloads/wissance/stringFormatter/v1.6.0/total?style=plastic)
+![GitHub release (latest by date)](https://img.shields.io/github/downloads/wissance/stringFormatter/v1.6.1/total?style=plastic)
 
 ![String Formatter: a convenient string formatting tool](img/sf_cover.png)
 
@@ -20,6 +20,7 @@
    - convert ***map to string*** using one of predefined formats (see `text_utils.go`)
 3. Code Style formatting utilities
    - convert `snake`/`kebab`/`camel` programming code to each other and vice versa (see `stringstyle_formatter.go`).
+4. `StringFormatter` aka `sf` **is safe** (`SAST` and tests were running automatically on push) 
 
 ### 1. Text formatting from templates
 

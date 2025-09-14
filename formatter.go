@@ -157,7 +157,7 @@ func Format(template string, args ...any) string {
 						// 2.2 Segment formatting
 						if !isEven {
 							j += repeatingOpenBrackets - 1
-							argNumber := -1
+							var argNumber int
 							var err error
 							var argFormatOptions string
 							if len(argNumberStr) == 1 {
@@ -185,9 +185,6 @@ func Format(template string, args ...any) string {
 								}
 								if argNumber < 0 {
 									argNumber, err = strconv.Atoi(argNumberStr)
-									if err == nil {
-										//rawWrite = false
-									}
 								}
 							}
 
@@ -410,7 +407,7 @@ func FormatComplex(template string, args map[string]any) string {
 
 								arg, ok = args[argKey]
 							}
-							if ok || (argFormatOptions != "" && !!repeatingOpenBracketsCollected) {
+							if ok || argFormatOptions != "" {
 								// get number from placeholder
 								strVal := ""
 								if arg != nil {
@@ -542,13 +539,12 @@ func getItemAsStr(item *any, itemFormat *string) string {
 				dividerVal, err := strconv.ParseFloat(dividerStr, 32)
 				if err == nil {
 					// 1. Convert arg to float
-					val := (*item).(interface{})
 					var floatVal float64
-					switch val.(type) {
+					switch (*item).(type) {
 					case float64:
-						floatVal = val.(float64)
+						floatVal = (*item).(float64)
 					case int:
-						floatVal = float64(val.(int))
+						floatVal = float64((*item).(int))
 					default:
 						floatVal = 0
 					}
@@ -566,10 +562,11 @@ func getItemAsStr(item *any, itemFormat *string) string {
 
 			// slice processing converting to {item}{delimiter}{item}{delimiter}{item}
 			slice, ok := (*item).([]any)
+			//nolint:ineffassign
 			if ok {
 				if len(slice) == 1 {
 					// this is because slice in 0 item contains another slice, we should take it
-					slice, ok = slice[0].([]any)
+					slice, _ = slice[0].([]any)
 				}
 				return SliceToString(&slice, &separator)
 			} else {
