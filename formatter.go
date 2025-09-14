@@ -563,6 +563,7 @@ func getItemAsStr(item *any, itemFormat *string) string {
 
 			// slice processing converting to {item}{delimiter}{item}{delimiter}{item}
 			slice, ok := (*item).([]any)
+			//nolint:ineffassign
 			if ok {
 				if len(slice) == 1 {
 					// this is because slice in 0 item contains another slice, we should take it
