@@ -185,9 +185,6 @@ func Format(template string, args ...any) string {
 								}
 								if argNumber < 0 {
 									argNumber, err = strconv.Atoi(argNumberStr)
-									if err == nil {
-										//rawWrite = false
-									}
 								}
 							}
 
