@@ -68,10 +68,8 @@ func SetStyle(text *string, style FormattingStyle, firstSymbol CaseSetting, text
 		switch style {
 		case Kebab:
 			sb.WriteString("-")
-			break
 		case Snake:
 			sb.WriteString("_")
-			break
 		case Camel:
 			// in case of convert to Camel we should skip v.Index (because it is _ or -)
 			if v.Style == Camel {
@@ -80,7 +78,6 @@ func SetStyle(text *string, style FormattingStyle, firstSymbol CaseSetting, text
 				sb.WriteRune(unicode.ToUpper(rune((*text)[endIndex+1])))
 			}
 			startIndex += 1
-			break
 		}
 		if v.Style != Camel {
 			startIndex += 1
