@@ -540,7 +540,7 @@ func getItemAsStr(item *any, itemFormat *string) string {
 				if err == nil {
 					// 1. Convert arg to float
 					var floatVal float64
-					switch (*item).(interface{}).(type) {
+					switch (*item).(type) {
 					case float64:
 						floatVal = (*item).(float64)
 					case int:
