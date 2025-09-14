@@ -1,7 +1,8 @@
 # StringFormatter
 
-A set of a ***high performance string tools*** that helps to build strings from templates and process text faster than with `fmt`!!!.
-Slice printing is **50% faster with 8 items** slice and **250% with 20 items** slice 
+* A set of a ***high performance string tools*** that helps to build strings from templates and process text faster than with `fmt`!!!.
+* Allows to **format code in appropriate style** (`Snake`, `Kebab`, `Camel`) and case.
+* Slice printing is **50% faster with 8 items** slice and **250% with 20 items** slice 
 
 ![GitHub go.mod Go version (subdirectory of monorepo)](https://img.shields.io/github/go-mod/go-version/wissance/stringFormatter?style=plastic) 
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/wissance/stringFormatter?style=plastic) 
