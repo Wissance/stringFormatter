@@ -157,7 +157,7 @@ func Format(template string, args ...any) string {
 						// 2.2 Segment formatting
 						if !isEven {
 							j += repeatingOpenBrackets - 1
-							argNumber := -1
+							var argNumber int
 							var err error
 							var argFormatOptions string
 							if len(argNumberStr) == 1 {
