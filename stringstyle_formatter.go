@@ -89,13 +89,10 @@ func SetStyle(text *string, style FormattingStyle, firstSymbol CaseSetting, text
 		switch textCase {
 		case ToUpper:
 			result.WriteString(strings.ToUpper(sb.String()[1:]))
-			break
 		case ToLower:
 			result.WriteString(strings.ToLower(sb.String()[1:]))
-			break
 		case NoChanges:
 			result.WriteString(sb.String()[1:])
-			break
 		}
 	} else {
 		result.WriteString(sb.String()[1:])
