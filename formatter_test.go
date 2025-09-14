@@ -233,6 +233,21 @@ func TestFormatWithArgFormatting(t *testing.T) {
 			args:     []any{[]any{"s1", "s2", "s3"}},
 			expected: "This is a list(slice) test: s1 s2 s3",
 		},
+		"docs_with_func_to_snake": {
+			template: "This docs contains description of a \"{0:c:snake}\" function",
+			args:     []any{[]any{"callSoapService"}},
+			expected: "This docs contains description of a \"call_soap_service\" function",
+		},
+		"docs_with_func_to_upper_case_snake": {
+			template: "This docs contains depends on a \"{0:c:SNAKE}\" constant",
+			args:     []any{[]any{"ReadTimeout"}},
+			expected: "This docs contains depends on a \"READ_TIMEOUT\" constant",
+		},
+		"notes-about-kebab": {
+			template: "Nowadays we've got a very strange style it looks in a following manner \"{0:C:kebab}\" and called \"kebab\"",
+			args:     []any{[]any{"veryVeryStrange"}},
+			expected: "Nowadays we've got a very strange style it looks in a following manner \"very-very-strange\" and called \"kebab\"",
+		},
 	} {
 		// Run test here
 		t.Run(name, func(t *testing.T) {
