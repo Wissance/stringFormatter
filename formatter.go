@@ -539,13 +539,12 @@ func getItemAsStr(item *any, itemFormat *string) string {
 				dividerVal, err := strconv.ParseFloat(dividerStr, 32)
 				if err == nil {
 					// 1. Convert arg to float
-					val := (*item).(interface{})
 					var floatVal float64
-					switch val.(type) {
+					switch (*item).(interface{}).(type) {
 					case float64:
-						floatVal = val.(float64)
+						floatVal = (*item).(float64)
 					case int:
-						floatVal = float64(val.(int))
+						floatVal = float64((*item).(int))
 					default:
 						floatVal = 0
 					}
