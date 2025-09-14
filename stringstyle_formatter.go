@@ -122,13 +122,10 @@ func GetFormattingStyleOptions(style string) (FormattingStyle, CaseSetting, Case
 	switch styleLower {
 	case string(Camel):
 		formattingStyle = Camel
-		break
 	case string(Snake):
 		formattingStyle = Snake
-		break
 	case string(Kebab):
 		formattingStyle = Kebab
-		break
 	}
 
 	runes := []rune(style)
