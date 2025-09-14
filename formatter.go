@@ -566,7 +566,7 @@ func getItemAsStr(item *any, itemFormat *string) string {
 			if ok {
 				if len(slice) == 1 {
 					// this is because slice in 0 item contains another slice, we should take it
-					slice, ok = slice[0].([]any)
+					slice, _ = slice[0].([]any)
 				}
 				return SliceToString(&slice, &separator)
 			} else {
