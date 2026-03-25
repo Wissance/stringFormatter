@@ -13,6 +13,9 @@
 3. Use for **template-based src code generator**
 4. Other text proccessing
 
+[Go Report Card](https://goreportcard.com/report/github.com/wissance/stringFormatter)
+
+
 ## ✨ 1 Features
 
 🔤 Flexible Syntax: Supports both indexed / positional (`{0}`) and named (`{user}`) *placeholders* in templates.
