@@ -1,4 +1,5 @@
 # Wissance/StringFormatter
+[![Awesome Package](https://awesome.re/mentioned-badge.svg)](https://github.com/avelino/awesome-go)
 ![GitHub go.mod Go version (subdirectory of monorepo)](https://img.shields.io/github/go-mod/go-version/wissance/stringFormatter?style=plastic) 
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/wissance/stringFormatter?style=plastic) 
 ![GitHub issues](https://img.shields.io/github/issues/wissance/stringFormatter?style=plastic)
