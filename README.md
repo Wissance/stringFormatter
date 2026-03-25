@@ -3,7 +3,9 @@
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/wissance/stringFormatter?style=plastic) 
 ![GitHub issues](https://img.shields.io/github/issues/wissance/stringFormatter?style=plastic)
 ![GitHub Release Date](https://img.shields.io/github/release-date/wissance/stringFormatter) 
-[![Wissance.WebApiToolkit CI](https://github.com/Wissance/stringFormatter/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/Wissance/stringFormatter/actions/workflows/ci.yml)
+[![Wissance.StringFormatter CI](https://github.com/Wissance/stringFormatter/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/Wissance/stringFormatter/actions/workflows/ci.yml)
+[![Go Report Card](https://goreportcard.com/badge/github.com/wissance/stringFormatter)](https://goreportcard.com/report/github.com/wissance/stringFormatter)
+![Coverage](https://coveralls.io/repos/github/wissance/stringFormatter/badge.svg?branch=master)
 
 ![String Formatter: a convenient string formatting tool](img/sf_logo_sm.png)
 
