@@ -5,7 +5,7 @@
 ![GitHub Release Date](https://img.shields.io/github/release-date/wissance/stringFormatter) 
 [![Wissance.StringFormatter CI](https://github.com/Wissance/stringFormatter/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/Wissance/stringFormatter/actions/workflows/ci.yml)
 [![Go Report Card](https://goreportcard.com/badge/github.com/wissance/stringFormatter)](https://goreportcard.com/report/github.com/wissance/stringFormatter)
-![Coverage](https://coveralls.io/repos/github/wissance/stringFormatter/badge.svg?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/Wissance/stringFormatter/badge.svg?branch=master)](https://coveralls.io/github/Wissance/stringFormatter?branch=master)
 
 ![String Formatter: a convenient string formatting tool](img/sf_logo_sm.png)
 
@@ -15,7 +15,9 @@
 3. Use for **template-based src code generator**
 4. Other text proccessing
 
-[Go Report Card](https://goreportcard.com/report/github.com/wissance/stringFormatter)
+Other important resources: 
+* [Go Report Card A+](https://goreportcard.com/report/github.com/wissance/stringFormatter)
+* [Coverage > 80%](https://coveralls.io/github/Wissance/stringFormatter)
 
 
 ## ✨ 1 Features
