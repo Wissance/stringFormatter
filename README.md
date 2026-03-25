@@ -15,7 +15,9 @@
 3. Use for **template-based src code generator**
 4. Other text proccessing
 
-[Go Report Card](https://goreportcard.com/report/github.com/wissance/stringFormatter)
+Other important resources: 
+* [Go Report Card A+](https://goreportcard.com/report/github.com/wissance/stringFormatter)
+* [Coverage > 80%](https://coveralls.io/github/Wissance/stringFormatter)
 
 
 ## ✨ 1 Features
