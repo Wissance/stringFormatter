@@ -12,7 +12,7 @@ const (
 // MapToString - format map keys and values according to format, joining parts with separator.
 // Format should contain key and value placeholders which will be used for formatting, e.g.
 // "{key} : {value}", or "{value}", or "{key} => {value}".
-// Parts order in resulting string is not guranteed.
+// Parts order in resulting string is not guaranteed.
 func MapToString[
 	K string | int | uint | int32 | int64 | uint32 | uint64,
 	V any,
