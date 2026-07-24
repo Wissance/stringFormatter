@@ -7,6 +7,7 @@
 [![Wissance.StringFormatter CI](https://github.com/Wissance/stringFormatter/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/Wissance/stringFormatter/actions/workflows/ci.yml)
 [![Go Report Card](https://goreportcard.com/badge/github.com/wissance/stringFormatter)](https://goreportcard.com/report/github.com/wissance/stringFormatter)
 [![Coverage Status](https://coveralls.io/repos/github/Wissance/stringFormatter/badge.svg?branch=master)](https://coveralls.io/github/Wissance/stringFormatter?branch=master)
+[![Go Benchmarks](https://shields.io)](https://wissance.github.io/stringFormatter/benchmarks/)
 
 ![String Formatter: a convenient string formatting tool](img/sf_logo_sm.png)
 
@@ -166,8 +167,10 @@ result2 := sf.SliceSameTypeToString(&numSlice, &separator)
 ## 📊 5 Benchmarks
 The library is optimized for high-load scenarios. Key benchmarks show significant performance gains (performance could be differ due to 1. different CPU architectures 2. statistics):
 
-Formatting (Format) vs fmt.Sprintf: 3-5x faster for complex templates.
+Formatting (Format) vs `fmt.Sprintf`: `3-5x` faster for complex templates.
 Slices (SliceToString) vs manual fmt-based joining: from `2.5` faster up to 20 items.
+
+These benchmarks tests are running with githun ci on push to `develop` or `master`, [see](https://github.com/Wissance/stringFormatter/actions)
 
 Run the benchmarks yourself:
 ```bash
@@ -185,6 +188,7 @@ Some benchmark screenshots:
 
 3. `SliceToStr`:
 ![SliceToStr benchmarks](img/slice2str_benchmarks.png)
+
 
 ## 📄 6 License
 This project is licensed under the MIT License - see the LICENSE file for details.

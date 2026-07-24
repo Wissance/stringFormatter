@@ -59,7 +59,7 @@ jobs:
         with:
           go-version: '1.21'
       - name: Benchmark all
-        run: go test -bench=. -run=^$ ./... | tee benchmark_output.txt
+        run: go test -bench=. -run=^$ ./... -cpu 1 | tee benchmark_output.txt
       - name: Store and Track Benchmarks
         uses: benchmark-action/github-action-benchmark@v1
         with:
