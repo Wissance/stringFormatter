@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1784919899713,
+  "lastUpdate": 1784921363250,
   "repoUrl": "https://github.com/Wissance/stringFormatter",
   "entries": {
     "Go Benchmark Results": [
@@ -240,6 +240,126 @@ window.BENCHMARK_DATA = {
             "value": 2496,
             "unit": "ns/op",
             "extra": "478153 times\n4 procs"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "um.nix.user@gmail.com",
+            "name": "Ushakov Michale",
+            "username": "EvilLord666"
+          },
+          "committer": {
+            "email": "um.nix.user@gmail.com",
+            "name": "Ushakov Michale",
+            "username": "EvilLord666"
+          },
+          "distinct": true,
+          "id": "bbbe78c5028bef9c7e99725153d09159e9530d07",
+          "message": "readme update && ci too",
+          "timestamp": "2026-07-25T00:28:26+05:00",
+          "tree_id": "63f89b923ff019ada889fc0096b34575b76a2168",
+          "url": "https://github.com/Wissance/stringFormatter/commit/bbbe78c5028bef9c7e99725153d09159e9530d07"
+        },
+        "date": 1784921362550,
+        "tool": "go",
+        "benches": [
+          {
+            "name": "BenchmarkFormat4Arg",
+            "value": 1076,
+            "unit": "ns/op",
+            "extra": "1000000 times"
+          },
+          {
+            "name": "BenchmarkFormat4ArgAdvanced",
+            "value": 1037,
+            "unit": "ns/op",
+            "extra": "1000000 times"
+          },
+          {
+            "name": "BenchmarkFmt4Arg",
+            "value": 966.7,
+            "unit": "ns/op",
+            "extra": "1233590 times"
+          },
+          {
+            "name": "BenchmarkFmt4ArgAdvanced",
+            "value": 1052,
+            "unit": "ns/op",
+            "extra": "1000000 times"
+          },
+          {
+            "name": "BenchmarkFormat6Arg",
+            "value": 1144,
+            "unit": "ns/op",
+            "extra": "940561 times"
+          },
+          {
+            "name": "BenchmarkFmt6Arg",
+            "value": 1051,
+            "unit": "ns/op",
+            "extra": "1000000 times"
+          },
+          {
+            "name": "BenchmarkFormatComplex7Arg",
+            "value": 705.4,
+            "unit": "ns/op",
+            "extra": "1693765 times"
+          },
+          {
+            "name": "BenchmarkMapToStringWith11Keys",
+            "value": 3186,
+            "unit": "ns/op",
+            "extra": "365562 times"
+          },
+          {
+            "name": "BenchmarkSliceToStringAdvancedWith8IntItems",
+            "value": 901.4,
+            "unit": "ns/op",
+            "extra": "1332741 times"
+          },
+          {
+            "name": "BenchmarkSliceStandard8IntItems",
+            "value": 1055,
+            "unit": "ns/op",
+            "extra": "1000000 times"
+          },
+          {
+            "name": "BenchmarkSliceToStringAdvanced10MixedItems",
+            "value": 1148,
+            "unit": "ns/op",
+            "extra": "952622 times"
+          },
+          {
+            "name": "BenchmarkSliceToStringAdvanced10TypedItems",
+            "value": 193.7,
+            "unit": "ns/op",
+            "extra": "6091026 times"
+          },
+          {
+            "name": "BenchmarkSliceStandard10MixedItems",
+            "value": 1542,
+            "unit": "ns/op",
+            "extra": "806553 times"
+          },
+          {
+            "name": "BenchmarkSliceToStringAdvanced20StrItems",
+            "value": 1859,
+            "unit": "ns/op",
+            "extra": "629372 times"
+          },
+          {
+            "name": "BenchmarkSliceToStringAdvanced20TypedStrItems",
+            "value": 2362,
+            "unit": "ns/op",
+            "extra": "473424 times"
+          },
+          {
+            "name": "BenchmarkSliceStandard20StrItems",
+            "value": 2912,
+            "unit": "ns/op",
+            "extra": "437316 times"
           }
         ]
       }
