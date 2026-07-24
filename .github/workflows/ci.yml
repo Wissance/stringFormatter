@@ -52,6 +52,24 @@ jobs:
   benchmark-tests:
     name: Run benchmark tests on linux
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4.1.7
+      - name: Set up Go
+        uses: actions/setup-go@v5.2.0
+        with:
+          go-version: '1.21'
+      - name: Benchmark all
+        run: go test -bench=. -run=^$ ./... | tee benchmark_output.txt
+      - name: Store and Track Benchmarks
+        uses: benchmark-action/github-action-benchmark@v1
+        with:
+          name: Go Benchmark Results
+          tool: 'go'
+          output-file-path: benchmark_output.txt
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          auto-push: true
+          # This saves results directly into a "benchmark" folder on your gh-pages branch
+          benchmark-data-dir-path: 'benchmarks' 
 
   #all-tests-windows:
   #  name: Run all tests on windows
