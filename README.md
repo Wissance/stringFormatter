@@ -7,7 +7,7 @@
 [![Wissance.StringFormatter CI](https://github.com/Wissance/stringFormatter/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/Wissance/stringFormatter/actions/workflows/ci.yml)
 [![Go Report Card](https://goreportcard.com/badge/github.com/wissance/stringFormatter)](https://goreportcard.com/report/github.com/wissance/stringFormatter)
 [![Coverage Status](https://coveralls.io/repos/github/Wissance/stringFormatter/badge.svg?branch=master)](https://coveralls.io/github/Wissance/stringFormatter?branch=master)
-[![Go Benchmarks](https://shields.io)](https://wissance.github.io/stringFormatter/benchmarks/)
+[![Go Benchmarks](https://img.shields.io/badge/Benchmarks-View_Report-green?style=plastic)](https://raw.githubusercontent.com/Wissance/stringFormatter/refs/heads/gh-pages/benchmarks/data.js)
 
 ![String Formatter: a convenient string formatting tool](img/sf_logo_sm.png)
 
